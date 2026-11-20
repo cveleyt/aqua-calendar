@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AQUA Calendar</title>
+<style>
+  html,body{margin:0;height:100%;background:#0f1a22;overflow-x:hidden}
+  #stage{position:relative;margin:0 auto;overflow:hidden}
+  #frame{position:absolute;left:0;top:0;border:0;transform-origin:0 0;background:#0f1a22}
+</style>
+</head>
+<body>
+<div id="stage"><iframe id="frame" title="AQUA Calendar" scrolling="no"
+ src="https://docs.google.com/spreadsheets/d/e/2PACX-1vST4FP6w6NhrdHFVf2haRcSZgbVKTU3z4phaoNHdDsg-gJh9h0qTGTOneXt1neF9MaDjB-4hUmDlOI0/pubhtml?gid=325228382&single=true&widget=true&headers=false"></iframe></div>
+<script>
+// Native size of the calendar in the sheet: 1551 px wide, 667 px tall.
+var W = 1555, H = 667;
+var q = new URLSearchParams(location.search);
+var cropTop = parseInt(q.get('top') || '0', 10);   // pixels to hide at the top (title line)
+var frame = document.getElementById('frame'), stage = document.getElementById('stage');
+function fit(){
+  var s = Math.min(window.innerWidth / W, 2.5);
+  stage.style.width = (W * s) + 'px';
+  stage.style.height = (H * s) + 'px';
+  frame.style.width = W + 'px';
+  frame.style.height = (H + cropTop + 120) + 'px';
+  frame.style.top = (-cropTop * s) + 'px';
+  frame.style.transform = 'scale(' + s + ')';
+}
+window.addEventListener('resize', fit); fit();
+</script>
+</body>
+</html>
