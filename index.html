@@ -18,17 +18,20 @@
  src="https://docs.google.com/spreadsheets/d/e/2PACX-1vST4FP6w6NhrdHFVf2haRcSZgbVKTU3z4phaoNHdDsg-gJh9h0qTGTOneXt1neF9MaDjB-4hUmDlOI0/pubhtml?gid=325228382&single=true&widget=true&headers=false"></iframe></div>
 <script>
 // Native size of the calendar in the sheet: 1551 px wide, 667 px tall.
-var W = 1555, H = 667;
+var W = 1551, H = 667;
+var CL = 2, CR = 2;   // pixels cropped off the left and right edge lines
 var q = new URLSearchParams(location.search);
 var cropTop = parseInt(q.get('top') || '36', 10);  // pixels to hide at the top (Google title line)
 var frame = document.getElementById('frame'), stage = document.getElementById('stage');
 function fit(){
-  var s = Math.min(window.innerWidth / W, window.innerHeight / H, 2.5);  // fit the whole calendar in the window
-  stage.style.width = (W * s) + 'px';
+  var VW = W - CL - CR;
+  var s = Math.min(window.innerWidth / VW, window.innerHeight / H, 2.5);  // fit the whole calendar in the window
+  stage.style.width = (VW * s) + 'px';
   stage.style.height = (H * s) + 'px';
   frame.style.width = W + 'px';
   frame.style.height = (H + cropTop + 120) + 'px';
   frame.style.top = (-cropTop * s) + 'px';
+  frame.style.left = (-CL * s) + 'px';
   frame.style.transform = 'scale(' + s + ')';
 }
 function hint(){ document.getElementById('hint').style.display = (window.innerWidth < window.innerHeight && window.innerWidth < 700) ? 'block' : 'none'; }
