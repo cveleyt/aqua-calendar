@@ -262,4 +262,4 @@ function setStatus(){var el=document.getElementById('status');if(lastErr){el.cla
 function refresh(){loadAll().then(function(d){data=d;var n=new Date();lastOk=pad(n.getUTCHours())+':'+pad(n.getUTCMinutes())+':'+pad(n.getUTCSeconds());lastErr=null;render();setStatus()}).catch(function(e){lastErr=(e&&e.message)||'error';setStatus()})}
 addEventListener('resize',fit);setInterval(tick,1000);
 if(DEMO){var s=document.createElement('script');s.src='demo-data.js';s.onload=refresh;document.head.appendChild(s)}else{refresh();setInterval(refresh,REFRESH_MS)}
-})();</script></body></html>
+})();</script><script data-goatcounter="https://aquacal.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
