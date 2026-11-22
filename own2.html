@@ -27,7 +27,7 @@ body.cmp .main{grid-template-columns:1fr}
 /* war */
 .war .tag{display:inline-block;font-size:.68em;letter-spacing:.2em;font-weight:700;padding:.3em .8em;border-radius:99em;background:#1B3A4A;color:var(--teal);margin-bottom:.8em}
 .vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.6em}
-.team{color:#fff;text-align:center;padding:.9em .3em;border-radius:.8em}
+.team{display:block;text-decoration:none;transition:filter .15s;color:#fff;text-align:center;padding:.9em .3em;border-radius:.8em}
 .team.a{background:linear-gradient(160deg,#3F78C4,#2B558F)}.team.b{background:linear-gradient(160deg,#BD4C47,#8A312F)}
 .team .n{font-size:1.6em;font-weight:800;line-height:1}
 .team .c{font-size:.8em;opacity:.9;margin-top:.35em}
@@ -102,6 +102,7 @@ html.light #tip .tr{color:#A86B00}html.light #tip .tm{color:#587083}html.light #
 html.light .nt small,html.light .dt span{color:var(--mut)}
 html.light .cell.sel{border-color:var(--teal);box-shadow:inset 0 0 0 2px var(--teal);background:rgba(95,179,179,.16)}.cell.today.sel{box-shadow:inset 0 0 0 2px var(--gold)}
 .ag{cursor:pointer;transition:opacity .15s}.ag.hl{box-shadow:0 0 0 3px var(--gold);position:relative}.ag.dim{opacity:.32}
+.team:hover{filter:brightness(1.12)}
 #status{color:#7A8F9D}
 #status{position:fixed;right:.8em;bottom:.4em;font:11px Arial;color:#5F7686}#status.err{color:#ff8f8f}
 /* phone */
@@ -175,7 +176,7 @@ function loadAll(){
   if (DEMO){ var D=window.DEMO, ne0=function(rs){return rs.filter(function(r){return r.some(function(c){return String(c).trim()!==''})})}; return Promise.resolve({events:D.events,links:D.links,stead:D.stead,war:ne0(D.war),ql:ne0(D.ql),wars:D.wars||[],sc:D.sc||[],desc:D.desc||[['Black Friday','Stores across Torn offer big discounts for the day.']]}); }
   return Promise.all([
     getRange('Events','A2:F81'), getRange('Links','A1:E12'), getRange('Calendar','E2:G2'),
-    getRange('Calendar','I4:K9'), getRange('Calendar','M4:N27'), getRange('Descriptions','A1:C200').catch(function(){return []}), getRange('Wars','A1:F40').catch(function(){return []}), getRange('War','B27:B29').catch(function(){return []})
+    getRange('Calendar','I4:K9'), getRange('Calendar','M4:N27'), getRange('Descriptions','A1:C200').catch(function(){return []}), getRange('Wars','A1:F40').catch(function(){return []}), getRange('War','B26:B29').catch(function(){return []})
   ]).then(function(a){ var ne=function(rs){return rs.filter(function(r){return r.some(function(c){return String(c).trim()!==''})})}; return {events:a[0], links:a[1], stead:a[2], war:ne(a[3]), ql:ne(a[4]), desc:a[5]||[], wars:a[6]||[], sc:a[7]||[]}; });
 }
 
@@ -257,7 +258,8 @@ function render(){
  var chips=[cell(d.war,2,0),cell(d.war,2,1),cell(d.war,2,2)].filter(Boolean);
  var rules=cell(d.war,3,0).trim().split(/\n\s*\n/).map(function(x){return x.trim()}).filter(Boolean);
  var up=events.filter(function(e){return e.e>=todayI&&!e.archived}).sort(function(a,b){return a.s-b.s||a.e-b.e}).slice(0,6);
- h+='<div class="col"><div class="card war"><span class="tag">RANKED WAR NOTICE</span><div class="vs"><div class="team a"><div class="n">'+esc(aq[0])+'</div><div class="c">'+esc(aq[1]||'')+'</div></div><div class="x">VS</div><div class="team b"><div class="n">'+esc(op[0])+'</div><div class="c">'+esc(op[1]||'')+'</div></div></div>';
+ var wid=String(((d.sc||[])[0]||[''])[0]).replace(/[^0-9]/g,''),wdone=(String(((d.sc||[])[3]||[''])[0]).toUpperCase()==='TRUE')||status==='WAR OVER';var wurl=(wdone&&wid)?'https://www.torn.com/war.php?step=rankreport&rankID='+wid:'https://www.torn.com/factions.php?step=your#/war/rank';var wt=wdone&&wid?'Open the war report on Torn':'Open the active war page on Torn';
+ h+='<div class="col"><div class="card war"><span class="tag">RANKED WAR NOTICE</span><div class="vs"><a class="team a" href="'+wurl+'" target="_blank" rel="noopener" title="'+wt+'"><div class="n">'+esc(aq[0])+'</div><div class="c">'+esc(aq[1]||'')+'</div></a><div class="x">VS</div><a class="team b" href="'+wurl+'" target="_blank" rel="noopener" title="'+wt+'"><div class="n">'+esc(op[0])+'</div><div class="c">'+esc(op[1]||'')+'</div></a></div>';
  h+='<div class="when">'+esc(cell(d.war,1,0))+'</div><div class="chips">'+chips.map(function(t,i){return '<span class="chip" style="background:'+chipCol(t,i)+'">'+esc(t)+'</span>'}).join('')+'</div>';
  if(rules.length)h+='<div class="rules">'+rules.map(function(p){return '<p>'+esc(p)+'</p>'}).join('')+'</div>';
  h+='</div><div class="card next"><div class="lbl">Next events</div>';
@@ -267,7 +269,7 @@ function render(){
  var hist=[];
  var cur=/(\w{3})\w*\s+(\d{1,2})\s+(\w{3})/.exec(cell(d.war,1,0));
  if(cur&&op[0]){var curT=cell(d.war,2,1).replace(/^\s+|\s+$/g,'');var sc=(d.sc||[]).map(function(r){return String(r[0]||'').replace(/[^0-9.]/g,'')});
-  var us=+sc[0],th=+sc[1],ended=String(((d.sc||[])[2]||[''])[0]).toUpperCase()==='TRUE';
+  var us=+sc[1],th=+sc[2],ended=String(((d.sc||[])[3]||[''])[0]).toUpperCase()==='TRUE';
   var res=status==='UPCOMING'?'UPCOMING':(/LOSS/i.test(curT)?'LOSS':(/WIN/i.test(curT)?'WIN':(ended&&us&&th?(us>th?'WIN':'LOSS'):(status==='ONGOING'?'ONGOING':''))));
   hist.push({d:cur[2]+' '+cur[3].toUpperCase(),w:cur[1].toUpperCase(),o:op[0],t:curT.replace(/\w\S*/g,function(x){return x.charAt(0)+x.slice(1).toLowerCase()}),s:(us&&th)?fmtN(us)+' - '+fmtN(th):'',r:res,k:cur[2]+cur[3]})}
  (d.wars||[]).slice(1).forEach(function(r){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec((r[0]||'').trim());if(!m||!r[1])return;var di=dayIdx(+m[1],+m[2]-1,+m[3]),dd=idxToDate(di);
