@@ -103,6 +103,11 @@ html.light .nt small,html.light .dt span{color:var(--mut)}
 html.light .cell.sel{border-color:var(--teal);box-shadow:inset 0 0 0 2px var(--teal);background:rgba(95,179,179,.16)}.cell.today.sel{box-shadow:inset 0 0 0 2px var(--gold)}
 .ag{cursor:pointer;transition:opacity .15s}.ag.hl{box-shadow:0 0 0 3px var(--gold);position:relative}.ag.dim{opacity:.32}
 .team:hover{filter:brightness(1.12)}
+body.desk .main{grid-template-rows:minmax(0,1fr)}
+body.desk .col{overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#35566a transparent;padding-right:2px}
+body.desk .col::-webkit-scrollbar{width:6px}body.desk .col::-webkit-scrollbar-thumb{background:#35566a;border-radius:6px}body.desk .col::-webkit-scrollbar-track{background:transparent}
+body.desk .col>.card{flex-shrink:0}
+html.light body.desk .col{scrollbar-color:#9fb4c2 transparent}html.light body.desk .col::-webkit-scrollbar-thumb{background:#9fb4c2}
 #status{color:#7A8F9D}
 #status{position:fixed;right:.8em;bottom:.4em;font:11px Arial;color:#5F7686}#status.err{color:#ff8f8f}
 /* phone */
