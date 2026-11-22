@@ -166,11 +166,11 @@ function getRange(sheet, range){
     .catch(function(){ return jsonp(sheet, range); });
 }
 function loadAll(){
-  if (DEMO) return Promise.resolve(window.DEMO);
+  if (DEMO){ var D=window.DEMO, ne0=function(rs){return rs.filter(function(r){return r.some(function(c){return String(c).trim()!==''})})}; return Promise.resolve({events:D.events,links:D.links,stead:D.stead,war:ne0(D.war),ql:ne0(D.ql)}); }
   return Promise.all([
     getRange('Events','A2:F81'), getRange('Links','A1:E12'), getRange('Calendar','E2:G2'),
     getRange('Calendar','I4:K9'), getRange('Calendar','M4:N27')
-  ]).then(function(a){ return {events:a[0], links:a[1], stead:a[2], war:a[3], ql:a[4]}; });
+  ]).then(function(a){ var ne=function(rs){return rs.filter(function(r){return r.some(function(c){return String(c).trim()!==''})})}; return {events:a[0], links:a[1], stead:a[2], war:ne(a[3]), ql:ne(a[4])}; });
 }
 
 /* ---------- parsing ---------- */
@@ -197,7 +197,7 @@ function render(){
   var ty = n.getUTCFullYear(), tm = n.getUTCMonth(), td = n.getUTCDate();
   var todayI = dayIdx(ty, tm, td);
   var events = parseEvents(d.events);
-  var status = cell(d.war,4,0).trim().toUpperCase();
+  var status = cell(d.war,2,0).trim().toUpperCase();
   var warDone = (status === 'CAP MET' || status === 'WAR OVER');
   events.forEach(function(ev){
     if (ev.war && ev.archived) ev.color = COLORS.Slate;
@@ -261,18 +261,18 @@ function render(){
 
   /* ----- middle column ----- */
   var aq = cell(d.war,0,0).split('\n'), op = cell(d.war,0,2).split('\n');
-  var chips = [cell(d.war,4,0), cell(d.war,4,1), cell(d.war,4,2)];
+  var chips = [cell(d.war,2,0), cell(d.war,2,1), cell(d.war,2,2)];
   function chipColor(t, i){
     t = (t || '').toUpperCase();
     if (i === 0){ return t === 'UPCOMING' ? '#365E94' : (t === 'ONGOING' ? '#AE3A3F' : '#556A7B'); }
     if (i === 1){ return t.indexOf('TERMED') >= 0 ? '#BC4214' : (t.indexOf('PENDING') >= 0 ? '#5E6B52' : '#9E2F36'); }
     return t.indexOf('HIT CAP') === 0 ? '#182633' : '#9E2F36';
   }
-  var rules = cell(d.war,5,0).replace(/^\s+/, '').split(/\n\s*\n/).map(function(x){ return x.trim(); }).filter(Boolean);
+  var rules = cell(d.war,3,0).replace(/^\s+/, '').split(/\n\s*\n/).map(function(x){ return x.trim(); }).filter(Boolean);
   var upcoming = events.filter(function(ev){ return ev.e >= todayI && !ev.archived; }).sort(function(a,b){ return a.s - b.s || a.e - b.e; }).slice(0, 6);
   h += '<div class="midcol"><img class="banner" src="assets/aqua-banner.png" alt="Ranked war notice">';
   h += '<div class="teams"><div class="tm a"><div class="n">' + esc(aq[0]) + '</div>' + (aq[1] ? '<div class="c">' + esc(aq[1]) + '</div>' : '') + '</div><div class="tm vs">' + esc(cell(d.war,0,1) || 'VS') + '</div><div class="tm b"><div class="n">' + esc(op[0]) + '</div>' + (op[1] ? '<div class="c">' + esc(op[1]) + '</div>' : '') + '</div></div>';
-  h += '<div class="wdate">' + esc(cell(d.war,2,0)) + '</div>';
+  h += '<div class="wdate">' + esc(cell(d.war,1,0)) + '</div>';
   h += '<div class="chips">' + chips.map(function(t, i){ return '<div class="chip" style="background:' + chipColor(t, i) + ';' + (i === 2 && t.indexOf('HIT CAP') === 0 ? 'color:#F5C542' : '') + '">' + esc(t) + '</div>'; }).join('') + '</div>';
   h += '<div class="rules">' + rules.map(function(p){ return '<p>' + esc(p) + '</p>'; }).join('') + '</div>';
   h += '<div class="nehead">NEXT EVENTS</div>';

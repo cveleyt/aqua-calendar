@@ -136,11 +136,11 @@ function getRange(sheet, range){
     .catch(function(){ return jsonp(sheet, range); });
 }
 function loadAll(){
-  if (DEMO) return Promise.resolve(window.DEMO);
+  if (DEMO){ var D=window.DEMO, ne0=function(rs){return rs.filter(function(r){return r.some(function(c){return String(c).trim()!==''})})}; return Promise.resolve({events:D.events,links:D.links,stead:D.stead,war:ne0(D.war),ql:ne0(D.ql)}); }
   return Promise.all([
     getRange('Events','A2:F81'), getRange('Links','A1:E12'), getRange('Calendar','E2:G2'),
     getRange('Calendar','I4:K9'), getRange('Calendar','M4:N27')
-  ]).then(function(a){ return {events:a[0], links:a[1], stead:a[2], war:a[3], ql:a[4]}; });
+  ]).then(function(a){ var ne=function(rs){return rs.filter(function(r){return r.some(function(c){return String(c).trim()!==''})})}; return {events:a[0], links:a[1], stead:a[2], war:ne(a[3]), ql:ne(a[4])}; });
 }
 
 /* ---------- parsing ---------- */
@@ -168,7 +168,7 @@ function render(){
  var d=data;if(!d)return;var n=now();
  var ty=n.getUTCFullYear(),tm=n.getUTCMonth()+off;var ref=new Date(Date.UTC(ty,tm,1));ty=ref.getUTCFullYear();tm=ref.getUTCMonth();
  var todayI=dayIdx(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate());
- var events=parseEvents(d.events);var status=cell(d.war,4,0).trim().toUpperCase();var done=(status==='CAP MET'||status==='WAR OVER');
+ var events=parseEvents(d.events);var status=cell(d.war,2,0).trim().toUpperCase();var done=(status==='CAP MET'||status==='WAR OVER');
  events.forEach(function(e){e.color=e.war?((e.archived||done)?COLORS.Slate:COLORS.Red):(COLORS[e.colname]||DEFAULT_COLOR)});
  var firstI=dayIdx(ty,tm,1),startI=firstI-idxToDate(firstI).getUTCDay();
  var lastI=dayIdx(ty,tm+1,0),weeks=Math.ceil((lastI-startI+1)/7);
@@ -178,11 +178,11 @@ function render(){
  h+='<div class="clock"><div class="t" id="clk"></div><div class="d" id="dte"></div></div></div><div class="main">';
  /* left */
  var aq=cell(d.war,0,0).split('\n'),op=cell(d.war,0,2).split('\n');
- var chips=[cell(d.war,4,0),cell(d.war,4,1),cell(d.war,4,2)].filter(Boolean);
- var rules=cell(d.war,5,0).trim().split(/\n\s*\n/).map(function(x){return x.trim()}).filter(Boolean);
+ var chips=[cell(d.war,2,0),cell(d.war,2,1),cell(d.war,2,2)].filter(Boolean);
+ var rules=cell(d.war,3,0).trim().split(/\n\s*\n/).map(function(x){return x.trim()}).filter(Boolean);
  var up=events.filter(function(e){return e.e>=todayI&&!e.archived}).sort(function(a,b){return a.s-b.s||a.e-b.e}).slice(0,6);
  h+='<div class="col"><div class="card war"><span class="tag">RANKED WAR NOTICE</span><div class="vs"><div class="team a"><div class="n">'+esc(aq[0])+'</div><div class="c">'+esc(aq[1]||'')+'</div></div><div class="x">VS</div><div class="team b"><div class="n">'+esc(op[0])+'</div><div class="c">'+esc(op[1]||'')+'</div></div></div>';
- h+='<div class="when">'+esc(cell(d.war,2,0))+'</div><div class="chips">'+chips.map(function(t,i){return '<span class="chip" style="background:'+chipCol(t,i)+'">'+esc(t)+'</span>'}).join('')+'</div>';
+ h+='<div class="when">'+esc(cell(d.war,1,0))+'</div><div class="chips">'+chips.map(function(t,i){return '<span class="chip" style="background:'+chipCol(t,i)+'">'+esc(t)+'</span>'}).join('')+'</div>';
  if(rules.length)h+='<div class="rules">'+rules.map(function(p){return '<p>'+esc(p)+'</p>'}).join('')+'</div>';
  h+='</div><div class="card next"><div class="lbl">Next events</div>';
  if(!up.length)h+='<div style="color:var(--mut)">No upcoming events</div>';
