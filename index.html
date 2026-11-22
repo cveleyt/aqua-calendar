@@ -5,13 +5,15 @@ c<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AQUA Calendar</title>
 <style>
-  html,body{margin:0;height:100%;background:#0f1a22;overflow-x:hidden}
+  html,body{margin:0;height:100%;background:#0f1a22;overflow:hidden}
   #stage{position:relative;margin:0 auto;overflow:hidden}
-  body{display:flex;justify-content:center;align-items:flex-start}
+  body{display:flex;justify-content:center;align-items:center}
+  #hint{display:none;position:fixed;left:0;right:0;bottom:14px;text-align:center;font:13px Arial,sans-serif;color:#8fb4c9}
   #frame{position:absolute;left:0;top:0;border:0;transform-origin:0 0;background:#0f1a22}
 </style>
 </head>
 <body>
+<div id="hint">Rotate your phone sideways for a bigger calendar</div>
 <div id="stage"><iframe id="frame" title="AQUA Calendar" scrolling="no"
  src="https://docs.google.com/spreadsheets/d/e/2PACX-1vST4FP6w6NhrdHFVf2haRcSZgbVKTU3z4phaoNHdDsg-gJh9h0qTGTOneXt1neF9MaDjB-4hUmDlOI0/pubhtml?gid=325228382&single=true&widget=true&headers=false"></iframe></div>
 <script>
@@ -29,7 +31,8 @@ function fit(){
   frame.style.top = (-cropTop * s) + 'px';
   frame.style.transform = 'scale(' + s + ')';
 }
-window.addEventListener('resize', fit); fit();
+function hint(){ document.getElementById('hint').style.display = (window.innerWidth < window.innerHeight && window.innerWidth < 700) ? 'block' : 'none'; }
+window.addEventListener('resize', function(){ fit(); hint(); }); fit(); hint();
 </script>
 </body>
 </html>
