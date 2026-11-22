@@ -38,7 +38,7 @@ body.cmp .main{grid-template-columns:1fr}
 .rules{margin-top:.9em;border-top:1px solid var(--line);padding-top:.8em;font-size:.88em;line-height:1.4;color:#C9D6DE}
 .rules p{margin:0 0 .6em}
 /* next */
-.next{flex:1;min-height:0;overflow:hidden}
+.next{flex:0 0 auto;min-height:0;overflow:hidden}
 .nrow{display:grid;grid-template-columns:3.2em 1fr;gap:.8em;align-items:center;padding:.5em 0;border-bottom:1px solid var(--line)}
 .nrow:last-child{border:0}
 .dt{text-align:center;line-height:1}.dt b{display:block;font-size:1.4em}.dt span{font-size:.65em;color:var(--mut);letter-spacing:.12em}
@@ -68,6 +68,17 @@ body.cmp .main{grid-template-columns:1fr}
 .lk{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center}.lk small{width:100%}.lk{position:relative;display:block}.lk::after{content:"\2197";color:var(--mut);position:absolute;right:.7em;top:.55em}
 .ss .row{display:flex;justify-content:space-between;font-size:.85em;padding:.25em 0}.ss .row b{color:var(--gold)}
 #tip{position:fixed;display:none;z-index:50;max-width:21em;background:#1A2A36;border:1px solid #2F4658;border-radius:.7em;padding:.8em 1em;box-shadow:0 .8em 2em rgba(0,0,0,.6);pointer-events:none;font-size:14px;text-align:center}#tip .tt{font-weight:800;font-size:1.05em;padding-bottom:.4em;border-bottom:.2em solid;margin-bottom:.5em}#tip .tr{font-weight:700;color:#F2C14E;font-size:.9em}#tip .tm{color:#A9BBC7;font-size:.85em;margin-top:.2em}#tip .td{margin-top:.55em;font-size:.88em;line-height:1.35;color:#DCE7EE}
+.hist .hr{display:grid;grid-template-columns:4em 1fr auto;gap:.6em;align-items:center;padding:.5em 0;border-bottom:1px solid var(--line)}
+.hist .hr:last-child{border:0}
+.hist .hd{font-size:.72em;color:var(--mut);letter-spacing:.1em;font-weight:700;line-height:1.2}
+.hist .ho{font-weight:700;font-size:.92em;line-height:1.2}
+.hist .ho small{display:block;font-weight:400;color:var(--mut);font-size:.78em;margin-top:.15em}
+.hist .hres{text-align:right}
+.hist .rc{display:inline-block;font-size:.7em;font-weight:800;letter-spacing:.08em;padding:.3em .7em;border-radius:.4em;color:#fff}
+.hist .rc.w{background:#2F7D4F}.hist .rc.l{background:#AE4541}.hist .rc.live{background:#BC4214}.hist .rc.o{background:#556A7B}
+.hist .sc{font-size:.72em;color:var(--mut);margin-top:.25em;font-variant-numeric:tabular-nums}
+.hist .hr.cur{background:rgba(242,193,78,.06);margin:0 -.5em;padding-left:.5em;padding-right:.5em;border-radius:.5em}
+.hist .hd b{display:block;white-space:nowrap;font-size:1.15em;color:var(--tx);letter-spacing:.02em}.hist .hd span{display:block;margin-top:.2em;font-size:.95em}
 #status{position:fixed;right:.8em;bottom:.4em;font:11px Arial;color:#5F7686}#status.err{color:#ff8f8f}
 /* phone */
 body.cmp .top{flex-wrap:wrap}body.cmp .clock{text-align:left;width:100%}
@@ -137,11 +148,11 @@ function getRange(sheet, range){
     .catch(function(){ return jsonp(sheet, range); });
 }
 function loadAll(){
-  if (DEMO){ var D=window.DEMO, ne0=function(rs){return rs.filter(function(r){return r.some(function(c){return String(c).trim()!==''})})}; return Promise.resolve({events:D.events,links:D.links,stead:D.stead,war:ne0(D.war),ql:ne0(D.ql),desc:D.desc||[['Black Friday','Stores across Torn offer big discounts for the day.']]}); }
+  if (DEMO){ var D=window.DEMO, ne0=function(rs){return rs.filter(function(r){return r.some(function(c){return String(c).trim()!==''})})}; return Promise.resolve({events:D.events,links:D.links,stead:D.stead,war:ne0(D.war),ql:ne0(D.ql),wars:D.wars||[],sc:D.sc||[],desc:D.desc||[['Black Friday','Stores across Torn offer big discounts for the day.']]}); }
   return Promise.all([
     getRange('Events','A2:F81'), getRange('Links','A1:E12'), getRange('Calendar','E2:G2'),
-    getRange('Calendar','I4:K9'), getRange('Calendar','M4:N27'), getRange('Descriptions','A1:C200').catch(function(){return []})
-  ]).then(function(a){ var ne=function(rs){return rs.filter(function(r){return r.some(function(c){return String(c).trim()!==''})})}; return {events:a[0], links:a[1], stead:a[2], war:ne(a[3]), ql:ne(a[4]), desc:a[5]||[]}; });
+    getRange('Calendar','I4:K9'), getRange('Calendar','M4:N27'), getRange('Descriptions','A1:C200').catch(function(){return []}), getRange('Wars','A1:F40').catch(function(){return []}), getRange('War','B27:B29').catch(function(){return []})
+  ]).then(function(a){ var ne=function(rs){return rs.filter(function(r){return r.some(function(c){return String(c).trim()!==''})})}; return {events:a[0], links:a[1], stead:a[2], war:ne(a[3]), ql:ne(a[4]), desc:a[5]||[], wars:a[6]||[], sc:a[7]||[]}; });
 }
 
 /* ---------- parsing ---------- */
@@ -165,6 +176,7 @@ function cell(rows, r, c){ return (rows[r] && rows[r][c] != null) ? String(rows[
 
 function chipCol(t,i){t=(t||'').toUpperCase();if(i===0)return t==='UPCOMING'?'#365E94':t==='ONGOING'?'#AE3A3F':'#4A5E6D';if(i===1)return t.indexOf('TERMED')>=0?'#BC4214':t.indexOf('PENDING')>=0?'#5E6B52':'#9E2F36';return '#1B2F3F;color:#F2C14E'}
 var off=0,EV=[],DESC=[];
+function fmtN(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,',')}
 function norm(t){return String(t||'').replace(/[\u2694\u200b]/g,'').trim().toLowerCase()}
 function findDesc(t){var k=norm(t);for(var i=0;i<DESC.length;i++){if(norm(DESC[i][0])===k&&DESC[i][1])return DESC[i][1]}return ''}
 var tip;
@@ -201,7 +213,21 @@ function render(){
  h+='</div><div class="card next"><div class="lbl">Next events</div>';
  if(!up.length)h+='<div style="color:var(--mut)">No upcoming events</div>';
  up.forEach(function(e){var dd=idxToDate(e.s);h+='<div class="nrow"><div class="dt"><b>'+dd.getUTCDate()+'</b><span>'+MON3[dd.getUTCMonth()].toUpperCase()+'</span></div><div class="nt" style="--c:'+e.color+'">'+esc(e.title)+'<small>'+esc(DAYS[dd.getUTCDay()]+(e.e>e.s?' to '+fmtDay(e.e):'')+(e.time?' | '+e.time:''))+'</small></div></div>'});
- h+='</div></div>';
+ h+='</div>';
+ var hist=[];
+ var cur=/(\w{3})\w*\s+(\d{1,2})\s+(\w{3})/.exec(cell(d.war,1,0));
+ if(cur&&op[0]){var curT=cell(d.war,2,1).replace(/^\s+|\s+$/g,'');var sc=(d.sc||[]).map(function(r){return String(r[0]||'').replace(/[^0-9.]/g,'')});
+  var us=+sc[0],th=+sc[1],ended=String(((d.sc||[])[2]||[''])[0]).toUpperCase()==='TRUE';
+  var res=status==='UPCOMING'?'UPCOMING':(/LOSS/i.test(curT)?'LOSS':(/WIN/i.test(curT)?'WIN':(ended&&us&&th?(us>th?'WIN':'LOSS'):(status==='ONGOING'?'ONGOING':''))));
+  hist.push({d:cur[2]+' '+cur[3].toUpperCase(),w:cur[1].toUpperCase(),o:op[0],t:curT.replace(/\w\S*/g,function(x){return x.charAt(0)+x.slice(1).toLowerCase()}),s:(us&&th)?fmtN(us)+' - '+fmtN(th):'',r:res,k:cur[2]+cur[3]})}
+ (d.wars||[]).slice(1).forEach(function(r){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec((r[0]||'').trim());if(!m||!r[1])return;var di=dayIdx(+m[1],+m[2]-1,+m[3]),dd=idxToDate(di);
+  var key=dd.getUTCDate()+MON3[dd.getUTCMonth()];if(hist.some(function(x){return x.k===key}))return;
+  hist.push({d:dd.getUTCDate()+' '+MON3[dd.getUTCMonth()].toUpperCase(),w:DAYS[dd.getUTCDay()].toUpperCase(),o:r[1],t:r[2]||'',s:(r[3]&&r[4])?r[3]+' - '+r[4]:'',r:(r[5]||'').toUpperCase(),k:key,di:di})});
+ var rest=hist.slice(1).sort(function(a,b){return (b.di||0)-(a.di||0)});hist=hist.slice(0,1).concat(rest);
+ if(hist.length){h+='<div class="card hist"><div class="lbl">War record</div>'+hist.slice(0,4).map(function(r,i){
+  var cls=r.r==='WIN'?'w':r.r==='LOSS'?'l':(r.r==='ONGOING'||r.r==='CAP MET')?'live':'o';
+  return '<div class="hr'+(i===0?' cur':'')+'" style="opacity:'+[1,.78,.55,.36][i]+'"><div class="hd"><b>'+esc(r.d)+'</b><span>'+esc(r.w)+'</span></div><div class="ho">'+esc(r.o)+'<small>'+esc(r.t)+'</small></div><div class="hres"><span class="rc '+cls+'">'+esc(r.r||'-')+'</span>'+(r.s?'<div class="sc">'+esc(r.s)+'</div>':'')+'</div></div>'}).join('')+'</div>'}
+h+='</div>';
  /* calendar */
  h+='<div class="card calwrap"><div class="calhead"><h2>'+MONTHS[tm].toUpperCase()+'<span>'+ty+'</span></h2></div><div class="dow">'+['SUN','MON','TUE','WED','THU','FRI','SAT'].map(function(x){return '<div>'+x+'</div>'}).join('')+'</div>';
  h+='<div class="grid" style="grid-template-rows:repeat('+weeks+',minmax(0,1fr))">';
