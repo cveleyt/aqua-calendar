@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AQUA Calendar popup
 // @namespace    https://cveleyt.github.io/aqua-calendar/
-// @version      1.1
+// @version      1.2
 // @description  Small popup on Torn with the next AQUA faction events and the current war. Reads the AQUA calendar sheet. Does not click or automate anything on Torn.
 // @match        https://www.torn.com/*
 // @grant        GM_xmlhttpRequest
@@ -87,7 +87,8 @@
     '#aqc-pop{--bg:#0f1c25;--hd:#16303c;--card:#15262f;--line:#233a49;--tx:#e8f0f4;--mut:#8da3b1;--acc:#f2c14e;--teal:#7fd0d0;--chip:#1d3646;' +
     'position:fixed;right:14px;bottom:120px;z-index:99999;width:330px;max-width:calc(100vw - 28px);max-height:calc(100vh - 150px);overflow:auto;background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.55);font:13px/1.3 Arial,sans-serif;display:none}' +
     '#aqc-pop.light{--bg:#f4f8fb;--hd:#e3edf3;--card:#ffffff;--line:#d3dee6;--tx:#14212b;--mut:#587083;--acc:#a86b00;--teal:#1f6f7d;--chip:#e6eef4;box-shadow:0 10px 30px rgba(30,60,80,.3)}' +
-    '#aqc-pop *{box-sizing:border-box}' +
+    '#aqc-pop *{box-sizing:border-box;font-family:Arial,sans-serif}#aqc-pop div,#aqc-pop span,#aqc-pop b,#aqc-pop small{color:inherit}' +
+    '#aqc-pop .nm,#aqc-pop .dd b,#aqc-pop .war .vs span,#aqc-pop .chip{color:var(--tx)!important}#aqc-pop .chip.s,#aqc-pop .chip.up,#aqc-pop .chip.on,#aqc-pop .chip.t{color:#fff!important}#aqc-pop .nm small,#aqc-pop .dd span,#aqc-pop .war .dt,#aqc-pop .sec,#aqc-pop .m{color:var(--mut)!important}#aqc-pop .wh,#aqc-pop .war .vs i,#aqc-pop .f a{color:var(--acc)!important}#aqc-pop .h .ti{color:var(--teal)!important}' +
     '#aqc-pop .h{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--hd);border-bottom:1px solid var(--line)}' +
     '#aqc-pop .h .ti{flex:1;font-weight:800;letter-spacing:.16em;font-size:11px;color:var(--teal)}' +
     '#aqc-pop .tg{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--tx);cursor:pointer;padding:0;font-size:13px;line-height:1}' +
