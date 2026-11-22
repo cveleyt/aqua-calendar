@@ -27,14 +27,14 @@ body.cmp .main{grid-template-columns:1fr}
 /* war */
 .war .tag{display:inline-block;font-size:.68em;letter-spacing:.2em;font-weight:700;padding:.3em .8em;border-radius:99em;background:#1B3A4A;color:var(--teal);margin-bottom:.8em}
 .vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.6em}
-.team{text-align:center;padding:.9em .3em;border-radius:.8em}
+.team{color:#fff;text-align:center;padding:.9em .3em;border-radius:.8em}
 .team.a{background:linear-gradient(160deg,#3F78C4,#2B558F)}.team.b{background:linear-gradient(160deg,#BD4C47,#8A312F)}
 .team .n{font-size:1.6em;font-weight:800;line-height:1}
 .team .c{font-size:.8em;opacity:.9;margin-top:.35em}
 .vs .x{color:var(--gold);font-weight:800;font-size:1.1em}
 .when{text-align:center;margin:.9em 0 .7em;font-weight:700;font-size:1.05em}
 .chips{display:flex;gap:.4em;flex-wrap:wrap;justify-content:center}
-.chip{font-size:.75em;font-weight:700;padding:.4em .8em;border-radius:.5em;letter-spacing:.05em}
+.chip{color:#fff;font-size:.75em;font-weight:700;padding:.4em .8em;border-radius:.5em;letter-spacing:.05em}
 .rules{margin-top:.9em;border-top:1px solid var(--line);padding-top:.8em;font-size:.88em;line-height:1.4;color:#C9D6DE}
 .rules p{margin:0 0 .6em}
 /* next */
@@ -103,7 +103,7 @@ html.light .nt small,html.light .dt span{color:var(--mut)}
 html.light #status{color:#7A8F9D}
 #status{position:fixed;right:.8em;bottom:.4em;font:11px Arial;color:#5F7686}#status.err{color:#ff8f8f}
 /* phone */
-body.cmp .top{flex-wrap:wrap}body.cmp .clock{text-align:left;width:100%}
+body.cmp #status{position:static;text-align:right;padding:.6em 1em}body.cmp .top{flex-wrap:wrap}body.cmp .clock{text-align:left;width:100%}
 body.cmp .grid{grid-auto-rows:3.6em}body.cmp .ev{font-size:0;padding:0;height:.35em;margin:0}
 body.cmp .cell .n{font-size:.75em}
 .agenda{display:none}body.cmp .agenda{display:block;margin-top:.8em}
@@ -228,7 +228,7 @@ function render(){
  var firstI=dayIdx(ty,tm,1),startI=firstI-idxToDate(firstI).getUTCDay();
  var lastI=dayIdx(ty,tm+1,0),weeks=Math.ceil((lastI-startI+1)/7);
  var st=(d.stead&&d.stead[0])||[];
- var h='<div class="top"><a class="lg" href="https://www.torn.com/factions.php?step=profile&ID=10174" target="_blank" rel="noopener" title="Open the AQUA faction page"><img class="logo" src="assets/aqua-logo.png" alt="AQUA"></a><div class="sp"></div>';
+ var h='<div class="top"><a class="lg" href="https://www.torn.com/factions.php?step=profile&ID=10174" target="_blank" rel="noopener" title="Open the AQUA faction page"><img class="logo" src="assets/aqua-logo.png?v=2" alt="AQUA"></a><div class="sp"></div>';
  h+='<div class="stead">'+(st[0]?esc(st[0])+' ':'')+(st[1]?'<span class="pill maj">'+esc(st[1])+'</span>':'')+(st[2]?'<span class="pill min">'+esc(st[2])+'</span>':'')+'</div>';
  h+='<button id="th" class="thb" type="button" aria-label="Switch between dark and light mode" title="Dark / light mode">'+themeIcon()+'</button>';h+='<div class="clock"><div class="t" id="clk"></div><div class="d" id="dte"></div></div></div><div class="main">';
  /* left */
