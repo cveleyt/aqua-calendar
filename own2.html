@@ -7,7 +7,7 @@ body{background:radial-gradient(1200px 600px at 20% -10%,#12303A 0,transparent 6
 body.desk{height:100vh;overflow:hidden}
 body.desk #app{height:100vh;display:flex;flex-direction:column}
 .top{display:flex;align-items:center;gap:1.2em;margin-bottom:.8em}
-.logo{height:3.6em;mix-blend-mode:lighten}
+.logo{height:3.6em}
 .top .sp{flex:1}
 .clock{text-align:right}
 .clock .t{font-size:1.7em;font-weight:700;letter-spacing:.02em;font-variant-numeric:tabular-nums}
@@ -86,7 +86,7 @@ body.cmp .main{grid-template-columns:1fr}
 html.light{--bg:#EAF0F4;--panel:#FFFFFF;--panel2:#F5F8FA;--line:#CFDBE3;--tx:#14212B;--mut:#587083;--teal:#2A7F8E;--gold:#A86B00}
 html.light body{background:radial-gradient(1200px 600px at 20% -10%,#D6EAEE 0,transparent 60%),radial-gradient(900px 500px at 100% 100%,#DCE6F3 0,transparent 60%),var(--bg)}
 html.light .card{box-shadow:0 .5em 1.4em rgba(30,60,80,.12)}
-html.light .logo{mix-blend-mode:normal;background:#0E1A21;border-radius:.6em;padding:.15em .5em}
+html.light .logo{filter:brightness(.72) saturate(1.35)}
 html.light .cell{background:#F3F7FA}html.light .cell.today{background:#FFF4D6}
 html.light .cell.out{opacity:.5}
 html.light .pill.maj{background:#D9E4EC;color:#1B2E3C}html.light .pill.min{background:#DCF1E6;color:#1F7A55}
