@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AQUA Calendar popup
 // @namespace    https://cveleyt.github.io/aqua-calendar/
-// @version      1.4
+// @version      1.5
 // @description  Small popup on Torn with the next AQUA faction events and the current war. Reads the AQUA calendar sheet. Does not click or automate anything on Torn.
 // @match        https://www.torn.com/*
 // @grant        GM_xmlhttpRequest
@@ -84,7 +84,10 @@
   }
 
   var css = '' +
-    '#aqc-btn{position:fixed;right:14px;bottom:70px;z-index:99998;width:42px;height:42px;border-radius:50%;background:#0e2a33;border:2px solid #5fb3b3;cursor:pointer;box-shadow:0 0 0 3px rgba(95,179,179,.18),0 3px 10px rgba(0,0,0,.5);padding:0;background-repeat:no-repeat;background-position:center;background-size:84%}' +
+    '#aqc-btn{position:fixed;right:14px;bottom:70px;z-index:99998;width:42px;height:42px;border-radius:50%;background:#0e2a33;border:2px solid #5fb3b3;cursor:pointer;box-shadow:0 0 0 3px rgba(95,179,179,.18),0 3px 10px rgba(0,0,0,.5);padding:0;overflow:hidden}' +
+    '#aqc-btn span{display:block;width:100%;height:100%;background-repeat:no-repeat;background-position:center;background-size:84%}' +
+    '#aqc-btn.light{background:#f2f2f2;border-color:#1f6f7d;box-shadow:0 0 0 3px rgba(31,111,125,.18),0 3px 10px rgba(0,0,0,.3)}' +
+    '#aqc-btn.light span{filter:brightness(.5) saturate(1.5)}' +
     '#aqc-pop{--h1:#525252;--h2:#363636;--row:#333;--row2:#2e2e2e;--sep:#191919;--tx:#d6d6d6;--mut:#9a9a9a;--link:#75aee3;--gold:#e0b84a;--ok:#8fc23a;' +
     'position:fixed;right:14px;bottom:120px;z-index:99999;width:272px;max-width:calc(100vw - 28px);max-height:calc(100vh - 140px);overflow:auto;background:var(--row);border:1px solid rgba(95,179,179,.35);border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.7);font:12px/1.25 Arial,Helvetica,sans-serif;display:none}' +
     '#aqc-pop.light{--row:#f2f2f2;--row2:#ffffff;--sep:#dddddd;--tx:#333;--mut:#777;--link:#2f6fa8;--gold:#9a6a00;--ok:#4d7a0f;box-shadow:0 2px 10px rgba(0,0,0,.35)}' +
@@ -116,13 +119,13 @@
   var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   function ui() {
     var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
-    var b = document.createElement('button'); b.id = 'aqc-btn'; b.style.backgroundImage = 'url(' + ICON + ')'; b.setAttribute('aria-label', 'AQUA calendar'); b.title = 'AQUA calendar: next events';
+    var b = document.createElement('button'); b.id = 'aqc-btn'; b.innerHTML = '<span></span>'; b.firstChild.style.backgroundImage = 'url(' + ICON + ')'; b.setAttribute('aria-label', 'AQUA calendar'); b.title = 'AQUA calendar: next events';
     var p = document.createElement('div'); p.id = 'aqc-pop';
     document.body.appendChild(b); document.body.appendChild(p);
     var light = false;
     try { light = GM_getValue('aquaTheme', 'dark') === 'light'; } catch (e) {}
     var last = null;
-    function theme() { p.classList.toggle('light', light); }
+    function theme() { p.classList.toggle('light', light); b.classList.toggle('light', light); }
     function chipCls(t) { t = (t || '').toUpperCase(); return t === 'UPCOMING' ? 'up' : t === 'ONGOING' ? 'on' : ''; }
     function draw(d) {
       last = d;
@@ -150,6 +153,7 @@
       p.style.display = 'block'; theme(); p.innerHTML = '<div class="m">Loading...</div>';
       load(false).then(draw, function (e) { p.innerHTML = '<div class="m">Could not load the calendar (' + esc(e.message) + ')</div>'; });
     }
+    theme();
     p.addEventListener('click', function (ev) {
       ev.stopPropagation();
       if (ev.target && ev.target.id === 'aqc-tg') { light = !light; try { GM_setValue('aquaTheme', light ? 'light' : 'dark'); } catch (e) {} if (last) draw(last); else theme(); }
