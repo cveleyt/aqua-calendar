@@ -25,7 +25,7 @@ var frame = document.getElementById('frame'), stage = document.getElementById('s
 var BASE = 'https://docs.google.com/spreadsheets/d/';
 var PUB = BASE + 'e/2PACX-1vST4FP6w6NhrdHFVf2haRcSZgbVKTU3z4phaoNHdDsg-gJh9h0qTGTOneXt1neF9MaDjB-4hUmDlOI0/pubhtml?gid=325228382&single=true&widget=true&headers=false';
 var LIVE = BASE + '1JG7l4QcNfQLfRkW4-JgNQ2blAUtSU3gzZEZJN8LOsC8/htmlview?gid=325228382&single=true&widget=true&headers=false';
-frame.src = (q.get('v') === 'live') ? LIVE : PUB;   // ?v=live tests the live viewer
+frame.src = (q.get('v') === 'pub') ? PUB : LIVE;   // live viewer by default, ?v=pub shows the published copy
 function fit(){
   var VW = W - CL - CR;
   var s = Math.min(window.innerWidth / VW, window.innerHeight / H, 2.5);  // fit the whole calendar in the window
