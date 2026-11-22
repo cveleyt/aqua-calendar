@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AQUA Calendar popup
 // @namespace    https://cveleyt.github.io/aqua-calendar/
-// @version      1.0
+// @version      1.1
 // @description  Small popup on Torn with the next AQUA faction events and the current war. Reads the AQUA calendar sheet. Does not click or automate anything on Torn.
 // @match        https://www.torn.com/*
 // @grant        GM_xmlhttpRequest
@@ -82,38 +82,76 @@
     });
   }
 
-  var css = '#aqc-btn{position:fixed;right:14px;bottom:70px;z-index:99998;width:42px;height:42px;border-radius:50%;background:#10303a;border:2px solid #5fb3b3;color:#9fe0e0;font:700 11px Arial;letter-spacing:.5px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.5);padding:0}' +
-    '#aqc-pop{position:fixed;right:14px;bottom:120px;z-index:99999;width:300px;max-width:calc(100vw - 28px);background:#101e27;border:1px solid #2f4658;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.6);font:13px Arial;color:#e8f0f4;display:none;overflow:hidden}' +
-    '#aqc-pop .h{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#17303d;font-weight:700;letter-spacing:.12em;font-size:11px;color:#9fe0e0}' +
-    '#aqc-pop .h a{color:#f2c14e;text-decoration:none;font-size:11px;letter-spacing:0}' +
-    '#aqc-pop .w{padding:8px 10px;border-bottom:1px solid #1f3544;font-size:12px}' +
-    '#aqc-pop .w b{display:block;margin-bottom:2px}#aqc-pop .w span{color:#8da3b1}' +
-    '#aqc-pop table{width:100%;border-collapse:collapse}#aqc-pop td{padding:6px 8px;border-bottom:1px solid #1f3544;vertical-align:top}' +
-    '#aqc-pop tr:last-child td{border:0}#aqc-pop .d{width:62px;color:#f2c14e;font-weight:700;font-size:12px;border-left:4px solid var(--c)}' +
-    '#aqc-pop .t{font-weight:600}#aqc-pop .t small{display:block;color:#8da3b1;font-weight:400;font-size:11px}' +
-    '#aqc-pop .m{padding:12px;color:#8da3b1;text-align:center}';
+  var css = '' +
+    '#aqc-btn{position:fixed;right:14px;bottom:70px;z-index:99998;width:44px;height:44px;border-radius:50%;background:#10303a;border:2px solid #5fb3b3;color:#9fe0e0;font:800 11px Arial,sans-serif;letter-spacing:.5px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.5);padding:0}' +
+    '#aqc-pop{--bg:#0f1c25;--hd:#16303c;--card:#15262f;--line:#233a49;--tx:#e8f0f4;--mut:#8da3b1;--acc:#f2c14e;--teal:#7fd0d0;--chip:#1d3646;' +
+    'position:fixed;right:14px;bottom:120px;z-index:99999;width:330px;max-width:calc(100vw - 28px);max-height:calc(100vh - 150px);overflow:auto;background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.55);font:13px/1.3 Arial,sans-serif;display:none}' +
+    '#aqc-pop.light{--bg:#f4f8fb;--hd:#e3edf3;--card:#ffffff;--line:#d3dee6;--tx:#14212b;--mut:#587083;--acc:#a86b00;--teal:#1f6f7d;--chip:#e6eef4;box-shadow:0 10px 30px rgba(30,60,80,.3)}' +
+    '#aqc-pop *{box-sizing:border-box}' +
+    '#aqc-pop .h{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--hd);border-bottom:1px solid var(--line)}' +
+    '#aqc-pop .h .ti{flex:1;font-weight:800;letter-spacing:.16em;font-size:11px;color:var(--teal)}' +
+    '#aqc-pop .tg{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--tx);cursor:pointer;padding:0;font-size:13px;line-height:1}' +
+    '#aqc-pop .sec{padding:10px 12px 4px;font-size:10px;letter-spacing:.18em;font-weight:700;color:var(--mut)}' +
+    '#aqc-pop .war{margin:0 12px 6px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card)}' +
+    '#aqc-pop .war .vs{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;font-size:15px}' +
+    '#aqc-pop .war .vs i{font-style:normal;color:var(--acc);font-size:11px}' +
+    '#aqc-pop .war .dt{text-align:center;color:var(--mut);font-size:12px;margin-top:4px}' +
+    '#aqc-pop .chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px}' +
+    '#aqc-pop .chip{font-size:10px;font-weight:800;letter-spacing:.05em;padding:3px 8px;border-radius:5px;background:var(--chip);color:var(--tx)}' +
+    '#aqc-pop .chip.s{background:#556a7b;color:#fff}#aqc-pop .chip.up{background:#365e94;color:#fff}#aqc-pop .chip.on{background:#ae3a3f;color:#fff}#aqc-pop .chip.t{background:#bc4214;color:#fff}' +
+    '#aqc-pop .list{padding:2px 12px 12px}' +
+    '#aqc-pop .ev{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;padding:8px 10px;margin-top:6px;border:1px solid var(--line);border-left:4px solid var(--c);border-radius:9px;background:var(--card)}' +
+    '#aqc-pop .ev .dd{text-align:center;line-height:1}#aqc-pop .ev .dd b{display:block;font-size:18px}#aqc-pop .ev .dd span{font-size:9px;letter-spacing:.12em;color:var(--mut);font-weight:700}' +
+    '#aqc-pop .ev .nm{font-weight:700;font-size:13px}' +
+    '#aqc-pop .ev .nm small{display:block;margin-top:2px;font-weight:400;font-size:11px;color:var(--mut)}' +
+    '#aqc-pop .ev .wh{font-size:10px;font-weight:700;color:var(--acc);white-space:nowrap;text-align:right}' +
+    '#aqc-pop .m{padding:16px;text-align:center;color:var(--mut)}' +
+    '#aqc-pop .f{padding:8px 12px;border-top:1px solid var(--line);text-align:center;background:var(--hd)}' +
+    '#aqc-pop .f a{color:var(--acc);font-weight:700;text-decoration:none;font-size:12px}';
 
+  var MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   function ui() {
     var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
     var b = document.createElement('button'); b.id = 'aqc-btn'; b.textContent = 'AQUA'; b.title = 'AQUA calendar: next events';
     var p = document.createElement('div'); p.id = 'aqc-pop';
     document.body.appendChild(b); document.body.appendChild(p);
+    var light = false;
+    try { light = GM_getValue('aquaTheme', 'dark') === 'light'; } catch (e) {}
+    var last = null;
+    function theme() { p.classList.toggle('light', light); }
+    function chipCls(t) { t = (t || '').toUpperCase(); return t === 'UPCOMING' ? 'up' : t === 'ONGOING' ? 'on' : 's'; }
     function draw(d) {
-      var h = '<div class="h"><span>AQUA CALENDAR</span><a href="' + PAGE + '" target="_blank" rel="noopener">Open full calendar</a></div>';
-      if (d.war) h += '<div class="w"><b>' + esc(d.war.vs) + '</b><span>' + esc(d.war.date) + ' | ' + esc(d.war.status) + (d.war.type ? ' | ' + esc(d.war.type) : '') + '</span></div>';
+      last = d;
+      var h = '<div class="h"><span class="ti">AQUA CALENDAR</span><button class="tg" id="aqc-tg" title="Dark / light mode">' + (light ? '☾' : '☀') + '</button></div>';
+      if (d.war) {
+        var vs = d.war.vs.split(' vs ');
+        h += '<div class="sec">RANKED WAR</div><div class="war"><div class="vs"><span>' + esc(vs[0]) + '</span><i>VS</i><span>' + esc(vs[1] || '') + '</span></div><div class="dt">' + esc(d.war.date) + '</div><div class="chips">' +
+          (d.war.status ? '<span class="chip ' + chipCls(d.war.status) + '">' + esc(d.war.status) + '</span>' : '') +
+          (d.war.type ? '<span class="chip ' + (/TERMED/i.test(d.war.type) ? 't' : '') + '">' + esc(d.war.type) + '</span>' : '') + '</div></div>';
+      }
+      h += '<div class="sec">NEXT EVENTS</div><div class="list">';
       if (!d.events.length) h += '<div class="m">No upcoming events</div>';
-      else h += '<table>' + d.events.map(function (e) {
-        var diff = e.s - d.today, when = diff <= 0 ? 'now' : (diff === 1 ? 'tomorrow' : 'in ' + diff + ' days');
-        return '<tr><td class="d" style="--c:' + e.color + '">' + esc(fmt(e.s).replace(/^(\w{3}) (\d+) (\w{3})$/, '$2 $3')) + '<small style="display:block;color:#8da3b1;font-weight:400;font-size:10px">' + esc(DAYS[new Date(e.s * 86400000).getUTCDay()]) + '</small></td><td class="t">' + esc(e.title) + '<small>' + esc((e.e > e.s ? 'to ' + fmt(e.e) + ' | ' : '') + (e.war ? e.time : (e.time || '')) + (e.host && !e.war ? (e.time ? ' | ' : '') + 'Host: ' + e.host : '') + (when ? (e.time || e.host || e.e > e.s ? ' | ' : '') + when : '')) + '</small></td></tr>';
-      }).join('') + '</table>';
-      p.innerHTML = h;
+      d.events.forEach(function (e) {
+        var diff = e.s - d.today, when = diff <= 0 ? 'NOW' : (diff === 1 ? 'TOMORROW' : 'IN ' + diff + ' DAYS');
+        var dt = new Date(e.s * 86400000), meta = [];
+        if (e.e > e.s) meta.push('to ' + fmt(e.e));
+        if (e.time) meta.push(e.time);
+        if (e.host && !e.war) meta.push('Host: ' + e.host);
+        h += '<div class="ev" style="--c:' + e.color + '"><div class="dd"><b>' + dt.getUTCDate() + '</b><span>' + MON[dt.getUTCMonth()] + ' ' + DAYS[dt.getUTCDay()].toUpperCase() + '</span></div><div class="nm">' + esc(e.title) + (meta.length ? '<small>' + esc(meta.join(' | ')) + '</small>' : '') + '</div><div class="wh">' + when + '</div></div>';
+      });
+      h += '</div><div class="f"><a href="' + PAGE + '" target="_blank" rel="noopener">Open full calendar</a></div>';
+      p.innerHTML = h; theme();
     }
     function open() {
-      p.style.display = 'block'; p.innerHTML = '<div class="m">Loading...</div>';
+      p.style.display = 'block'; theme(); p.innerHTML = '<div class="m">Loading...</div>';
       load(false).then(draw, function (e) { p.innerHTML = '<div class="m">Could not load the calendar (' + esc(e.message) + ')</div>'; });
     }
+    p.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      if (ev.target && ev.target.id === 'aqc-tg') { light = !light; try { GM_setValue('aquaTheme', light ? 'light' : 'dark'); } catch (e) {} if (last) draw(last); else theme(); }
+    });
     b.addEventListener('click', function (ev) { ev.stopPropagation(); if (p.style.display === 'block') p.style.display = 'none'; else open(); });
-    document.addEventListener('click', function (ev) { if (p.style.display === 'block' && !p.contains(ev.target)) p.style.display = 'none'; });
+    document.addEventListener('click', function (ev) { if (p.style.display === 'block' && !p.contains(ev.target) && ev.target !== b) p.style.display = 'none'; });
     document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') p.style.display = 'none'; });
   }
   if (document.body) ui(); else document.addEventListener('DOMContentLoaded', ui);
