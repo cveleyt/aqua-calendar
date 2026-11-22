@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AQUA Calendar popup
 // @namespace    https://cveleyt.github.io/aqua-calendar/
-// @version      1.3
+// @version      1.4
 // @description  Small popup on Torn with the next AQUA faction events and the current war. Reads the AQUA calendar sheet. Does not click or automate anything on Torn.
 // @match        https://www.torn.com/*
 // @grant        GM_xmlhttpRequest
@@ -84,34 +84,36 @@
   }
 
   var css = '' +
-    '#aqc-btn{position:fixed;right:14px;bottom:70px;z-index:99998;width:44px;height:44px;border-radius:50%;background:#0e2a33;border:2px solid #5fb3b3;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.5);padding:0;background-repeat:no-repeat;background-position:center;background-size:84%}' +
-    '#aqc-pop{--bg:#0f1c25;--hd:#16303c;--card:#15262f;--line:#233a49;--tx:#e8f0f4;--mut:#8da3b1;--acc:#f2c14e;--teal:#7fd0d0;--chip:#1d3646;' +
-    'position:fixed;right:14px;bottom:120px;z-index:99999;width:330px;max-width:calc(100vw - 28px);max-height:calc(100vh - 150px);overflow:auto;background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.55);font:13px/1.3 Arial,sans-serif;display:none}' +
-    '#aqc-pop.light{--bg:#f4f8fb;--hd:#e3edf3;--card:#ffffff;--line:#d3dee6;--tx:#14212b;--mut:#587083;--acc:#a86b00;--teal:#1f6f7d;--chip:#e6eef4;box-shadow:0 10px 30px rgba(30,60,80,.3)}' +
-    '#aqc-pop *{box-sizing:border-box;font-family:Arial,sans-serif}#aqc-pop div,#aqc-pop span,#aqc-pop b,#aqc-pop small{color:inherit}' +
-    '#aqc-pop .nm,#aqc-pop .dd b,#aqc-pop .war .vs span,#aqc-pop .chip{color:var(--tx)!important}#aqc-pop .chip.s,#aqc-pop .chip.up,#aqc-pop .chip.on,#aqc-pop .chip.t{color:#fff!important}#aqc-pop .nm small,#aqc-pop .dd span,#aqc-pop .war .dt,#aqc-pop .sec,#aqc-pop .m{color:var(--mut)!important}#aqc-pop .wh,#aqc-pop .war .vs i,#aqc-pop .f a{color:var(--acc)!important}#aqc-pop .h .ti{color:var(--teal)!important}' +
-    '#aqc-pop .h{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--hd);border-bottom:1px solid var(--line)}' +
-    '#aqc-pop .h .ti{flex:1;font-weight:800;letter-spacing:.16em;font-size:11px;color:var(--teal)}' +
-    '#aqc-pop .tg{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--tx);cursor:pointer;padding:0;font-size:13px;line-height:1}' +
-    '#aqc-pop .sec{padding:10px 12px 4px;font-size:10px;letter-spacing:.18em;font-weight:700;color:var(--mut)}' +
-    '#aqc-pop .war{margin:0 12px 6px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card)}' +
-    '#aqc-pop .war .vs{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;font-size:15px}' +
-    '#aqc-pop .war .vs i{font-style:normal;color:var(--acc);font-size:11px}' +
-    '#aqc-pop .war .dt{text-align:center;color:var(--mut);font-size:12px;margin-top:4px}' +
-    '#aqc-pop .chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px}' +
-    '#aqc-pop .chip{font-size:10px;font-weight:800;letter-spacing:.05em;padding:3px 8px;border-radius:5px;background:var(--chip);color:var(--tx)}' +
-    '#aqc-pop .chip.s{background:#556a7b;color:#fff}#aqc-pop .chip.up{background:#365e94;color:#fff}#aqc-pop .chip.on{background:#ae3a3f;color:#fff}#aqc-pop .chip.t{background:#bc4214;color:#fff}' +
-    '#aqc-pop .list{padding:2px 12px 12px}' +
-    '#aqc-pop .ev{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;padding:8px 10px;margin-top:6px;border:1px solid var(--line);border-left:4px solid var(--c);border-radius:9px;background:var(--card)}' +
-    '#aqc-pop .ev .dd{text-align:center;line-height:1}#aqc-pop .ev .dd b{display:block;font-size:18px}#aqc-pop .ev .dd span{font-size:9px;letter-spacing:.12em;color:var(--mut);font-weight:700}' +
-    '#aqc-pop .ev .nm{font-weight:700;font-size:13px}' +
-    '#aqc-pop .ev .nm small{display:block;margin-top:2px;font-weight:400;font-size:11px;color:var(--mut)}' +
-    '#aqc-pop .ev .wh{font-size:10px;font-weight:700;color:var(--acc);white-space:nowrap;text-align:right}' +
-    '#aqc-pop .m{padding:16px;text-align:center;color:var(--mut)}' +
-    '#aqc-pop .f{padding:8px 12px;border-top:1px solid var(--line);text-align:center;background:var(--hd)}' +
-    '#aqc-pop .f a{color:var(--acc);font-weight:700;text-decoration:none;font-size:12px}';
+    '#aqc-btn{position:fixed;right:14px;bottom:70px;z-index:99998;width:42px;height:42px;border-radius:50%;background:#0e2a33;border:2px solid #5fb3b3;cursor:pointer;box-shadow:0 0 0 3px rgba(95,179,179,.18),0 3px 10px rgba(0,0,0,.5);padding:0;background-repeat:no-repeat;background-position:center;background-size:84%}' +
+    '#aqc-pop{--h1:#525252;--h2:#363636;--row:#333;--row2:#2e2e2e;--sep:#191919;--tx:#d6d6d6;--mut:#9a9a9a;--link:#75aee3;--gold:#e0b84a;--ok:#8fc23a;' +
+    'position:fixed;right:14px;bottom:120px;z-index:99999;width:272px;max-width:calc(100vw - 28px);max-height:calc(100vh - 140px);overflow:auto;background:var(--row);border:1px solid rgba(95,179,179,.35);border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.7);font:12px/1.25 Arial,Helvetica,sans-serif;display:none}' +
+    '#aqc-pop.light{--row:#f2f2f2;--row2:#ffffff;--sep:#dddddd;--tx:#333;--mut:#777;--link:#2f6fa8;--gold:#9a6a00;--ok:#4d7a0f;box-shadow:0 2px 10px rgba(0,0,0,.35)}' +
+    '#aqc-pop *{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}' +
+    '#aqc-pop .ph{display:flex;align-items:center;gap:7px;height:28px;padding:0 9px;background:linear-gradient(var(--h1),var(--h2));position:relative}' +
+    '#aqc-pop .ph:after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,#1b7c80,#5fb3b3,#1b7c80)}' +
+    '#aqc-pop .ph img{height:18px;width:auto;filter:brightness(1.7)}' +
+    '#aqc-pop .ph .tt{flex:1;color:#fff!important;font-weight:700;font-size:13px}' +
+    '#aqc-pop .tg{width:22px;height:22px;padding:0;border:0;background:transparent;color:#bbb!important;cursor:pointer;font-size:14px;line-height:1}' +
+    '#aqc-pop .g{display:flex;align-items:center;gap:6px;height:23px;padding:0 9px;background:#14606a;color:#fff!important;font-weight:700;font-size:12px;border-top:1px solid rgba(255,255,255,.12)}' +
+    '#aqc-pop .g:before{content:"";width:5px;height:5px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#8fe3e3}' +
+    '#aqc-pop .vs{text-align:center;padding:7px 8px 2px;font-weight:700;font-size:13px;background:var(--row);color:var(--tx)!important}' +
+    '#aqc-pop .vs i{font-style:normal;color:var(--gold)!important;font-size:11px;margin:0 6px}' +
+    '#aqc-pop .dt{text-align:center;padding:0 8px 4px;background:var(--row);color:var(--mut)!important}' +
+    '#aqc-pop .st{display:flex;gap:5px;justify-content:center;padding:4px 8px 8px;background:var(--row)}' +
+    '#aqc-pop .st span{font-size:10px;font-weight:700;color:#fff!important;padding:2px 7px;border-radius:3px;background:#556a7b}' +
+    '#aqc-pop .st span.up{background:#365e94}#aqc-pop .st span.on{background:#ae3a3f}#aqc-pop .st span.t{background:#bc4214}' +
+    '#aqc-pop .r{display:grid;grid-template-columns:60px 1fr auto;align-items:center;min-height:26px;border-top:1px solid var(--sep);background:var(--row)}' +
+    '#aqc-pop .r.alt{background:var(--row2)}' +
+    '#aqc-pop .r .l{font-weight:700;padding:0 7px;border-right:1px solid var(--sep);align-self:stretch;display:flex;flex-direction:column;justify-content:center;line-height:1.15;border-left:3px solid var(--c);color:var(--tx)!important}' +
+    '#aqc-pop .r .l small{font-weight:400;color:var(--mut)!important;font-size:10px}' +
+    '#aqc-pop .r .v{padding:4px 8px;color:var(--tx)!important}' +
+    '#aqc-pop .r .v small{display:block;color:var(--mut)!important;font-size:10.5px}' +
+    '#aqc-pop .r .w{padding:0 8px;color:var(--ok)!important;font-weight:700;font-size:11px;white-space:nowrap}' +
+    '#aqc-pop .m{padding:14px;text-align:center;background:var(--row);color:var(--mut)!important}' +
+    '#aqc-pop .f{padding:7px;text-align:center;border-top:1px solid var(--sep);background:var(--row)}' +
+    '#aqc-pop .f a{color:var(--link)!important;font-weight:700;text-decoration:none}';
 
-  var MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   function ui() {
     var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
     var b = document.createElement('button'); b.id = 'aqc-btn'; b.style.backgroundImage = 'url(' + ICON + ')'; b.setAttribute('aria-label', 'AQUA calendar'); b.title = 'AQUA calendar: next events';
@@ -121,27 +123,27 @@
     try { light = GM_getValue('aquaTheme', 'dark') === 'light'; } catch (e) {}
     var last = null;
     function theme() { p.classList.toggle('light', light); }
-    function chipCls(t) { t = (t || '').toUpperCase(); return t === 'UPCOMING' ? 'up' : t === 'ONGOING' ? 'on' : 's'; }
+    function chipCls(t) { t = (t || '').toUpperCase(); return t === 'UPCOMING' ? 'up' : t === 'ONGOING' ? 'on' : ''; }
     function draw(d) {
       last = d;
-      var h = '<div class="h"><span class="ti">AQUA CALENDAR</span><button class="tg" id="aqc-tg" title="Dark / light mode">' + (light ? '☾' : '☀') + '</button></div>';
+      var h = '<div class="ph"><img src="' + ICON + '" alt=""><span class="tt">AQUA Calendar</span><button class="tg" id="aqc-tg" title="Dark / light mode">' + (light ? '☾' : '☼') + '</button></div>';
       if (d.war) {
         var vs = d.war.vs.split(' vs ');
-        h += '<div class="sec">RANKED WAR</div><div class="war"><div class="vs"><span>' + esc(vs[0]) + '</span><i>VS</i><span>' + esc(vs[1] || '') + '</span></div><div class="dt">' + esc(d.war.date) + '</div><div class="chips">' +
-          (d.war.status ? '<span class="chip ' + chipCls(d.war.status) + '">' + esc(d.war.status) + '</span>' : '') +
-          (d.war.type ? '<span class="chip ' + (/TERMED/i.test(d.war.type) ? 't' : '') + '">' + esc(d.war.type) + '</span>' : '') + '</div></div>';
+        h += '<div class="g">Ranked War</div><div class="vs">' + esc(vs[0]) + '<i>VS</i>' + esc(vs[1] || '') + '</div><div class="dt">' + esc(d.war.date) + '</div><div class="st">' +
+          (d.war.status ? '<span class="' + chipCls(d.war.status) + '">' + esc(d.war.status) + '</span>' : '') +
+          (d.war.type ? '<span class="' + (/TERMED/i.test(d.war.type) ? 't' : '') + '">' + esc(d.war.type) + '</span>' : '') + '</div>';
       }
-      h += '<div class="sec">NEXT EVENTS</div><div class="list">';
+      h += '<div class="g">Next Events</div>';
       if (!d.events.length) h += '<div class="m">No upcoming events</div>';
-      d.events.forEach(function (e) {
-        var diff = e.s - d.today, when = diff <= 0 ? 'NOW' : (diff === 1 ? 'TOMORROW' : 'IN ' + diff + ' DAYS');
+      d.events.forEach(function (e, i) {
+        var diff = e.s - d.today, when = diff <= 0 ? 'now' : 'in ' + diff + 'd';
         var dt = new Date(e.s * 86400000), meta = [];
         if (e.e > e.s) meta.push('to ' + fmt(e.e));
         if (e.time) meta.push(e.time);
         if (e.host && !e.war) meta.push('Host: ' + e.host);
-        h += '<div class="ev" style="--c:' + e.color + '"><div class="dd"><b>' + dt.getUTCDate() + '</b><span>' + MON[dt.getUTCMonth()] + ' ' + DAYS[dt.getUTCDay()].toUpperCase() + '</span></div><div class="nm">' + esc(e.title) + (meta.length ? '<small>' + esc(meta.join(' | ')) + '</small>' : '') + '</div><div class="wh">' + when + '</div></div>';
+        h += '<div class="r' + (i % 2 ? ' alt' : '') + '"><div class="l" style="--c:' + e.color + '">' + dt.getUTCDate() + ' ' + MON[dt.getUTCMonth()] + '<small>' + DAYS[dt.getUTCDay()] + '</small></div><div class="v">' + esc(e.title) + (meta.length ? '<small>' + esc(meta.join(' | ')) + '</small>' : '') + '</div><div class="w">' + when + '</div></div>';
       });
-      h += '</div><div class="f"><a href="' + PAGE + '" target="_blank" rel="noopener">Open full calendar</a></div>';
+      h += '<div class="f"><a href="' + PAGE + '" target="_blank" rel="noopener">Open full calendar</a></div>';
       p.innerHTML = h; theme();
     }
     function open() {
