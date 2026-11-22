@@ -67,6 +67,7 @@ body.cmp .main{grid-template-columns:1fr}
 .lk small{display:block;color:var(--mut);font-weight:400;font-size:.75em;margin-top:.1em}
 .lk{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center}.lk small{width:100%}.lk{position:relative;display:block}.lk::after{content:"\2197";color:var(--mut);position:absolute;right:.7em;top:.55em}
 .ss .row{display:flex;justify-content:space-between;font-size:.85em;padding:.25em 0}.ss .row b{color:var(--gold)}
+#tip{position:fixed;display:none;z-index:50;max-width:21em;background:#1A2A36;border:1px solid #2F4658;border-radius:.7em;padding:.8em 1em;box-shadow:0 .8em 2em rgba(0,0,0,.6);pointer-events:none;font-size:14px;text-align:center}#tip .tt{font-weight:800;font-size:1.05em;padding-bottom:.4em;border-bottom:.2em solid;margin-bottom:.5em}#tip .tr{font-weight:700;color:#F2C14E;font-size:.9em}#tip .tm{color:#A9BBC7;font-size:.85em;margin-top:.2em}#tip .td{margin-top:.55em;font-size:.88em;line-height:1.35;color:#DCE7EE}
 #status{position:fixed;right:.8em;bottom:.4em;font:11px Arial;color:#5F7686}#status.err{color:#ff8f8f}
 /* phone */
 body.cmp .top{flex-wrap:wrap}body.cmp .clock{text-align:left;width:100%}
@@ -136,11 +137,11 @@ function getRange(sheet, range){
     .catch(function(){ return jsonp(sheet, range); });
 }
 function loadAll(){
-  if (DEMO){ var D=window.DEMO, ne0=function(rs){return rs.filter(function(r){return r.some(function(c){return String(c).trim()!==''})})}; return Promise.resolve({events:D.events,links:D.links,stead:D.stead,war:ne0(D.war),ql:ne0(D.ql)}); }
+  if (DEMO){ var D=window.DEMO, ne0=function(rs){return rs.filter(function(r){return r.some(function(c){return String(c).trim()!==''})})}; return Promise.resolve({events:D.events,links:D.links,stead:D.stead,war:ne0(D.war),ql:ne0(D.ql),desc:D.desc||[['Black Friday','Stores across Torn offer big discounts for the day.']]}); }
   return Promise.all([
     getRange('Events','A2:F81'), getRange('Links','A1:E12'), getRange('Calendar','E2:G2'),
-    getRange('Calendar','I4:K9'), getRange('Calendar','M4:N27')
-  ]).then(function(a){ var ne=function(rs){return rs.filter(function(r){return r.some(function(c){return String(c).trim()!==''})})}; return {events:a[0], links:a[1], stead:a[2], war:ne(a[3]), ql:ne(a[4])}; });
+    getRange('Calendar','I4:K9'), getRange('Calendar','M4:N27'), getRange('Descriptions','A1:C200').catch(function(){return []})
+  ]).then(function(a){ var ne=function(rs){return rs.filter(function(r){return r.some(function(c){return String(c).trim()!==''})})}; return {events:a[0], links:a[1], stead:a[2], war:ne(a[3]), ql:ne(a[4]), desc:a[5]||[]}; });
 }
 
 /* ---------- parsing ---------- */
@@ -163,12 +164,25 @@ function cell(rows, r, c){ return (rows[r] && rows[r][c] != null) ? String(rows[
 
 
 function chipCol(t,i){t=(t||'').toUpperCase();if(i===0)return t==='UPCOMING'?'#365E94':t==='ONGOING'?'#AE3A3F':'#4A5E6D';if(i===1)return t.indexOf('TERMED')>=0?'#BC4214':t.indexOf('PENDING')>=0?'#5E6B52':'#9E2F36';return '#1B2F3F;color:#F2C14E'}
-var off=0;
+var off=0,EV=[],DESC=[];
+function norm(t){return String(t||'').replace(/[\u2694\u200b]/g,'').trim().toLowerCase()}
+function findDesc(t){var k=norm(t);for(var i=0;i<DESC.length;i++){if(norm(DESC[i][0])===k&&DESC[i][1])return DESC[i][1]}return ''}
+var tip;
+function showTip(el,x,y){var e=EV[+el.getAttribute('data-i')];if(!e)return;
+ var rng=fmtDay(e.s)+(e.e>e.s?' to '+fmtDay(e.e):'');var ds=findDesc(e.title);
+ var meta=e.war?(e.time||''):('Time: '+(e.time||'N/A')+' | Host: '+(e.host||'N/A'));
+ tip.innerHTML='<div class="tt" style="border-color:'+e.color+'">'+esc(e.title)+'</div><div class="tr">'+esc(rng)+'</div>'+(meta?'<div class="tm">'+esc(meta)+'</div>':'')+(ds?'<div class="td">'+esc(ds)+'</div>':'');
+ tip.style.display='block';var w=tip.offsetWidth,h=tip.offsetHeight;
+ var L=Math.min(Math.max(8,x+14),innerWidth-w-8),T=y+18+h>innerHeight?y-h-14:y+18;tip.style.left=L+'px';tip.style.top=Math.max(8,T)+'px'}
+function hideTip(){if(tip)tip.style.display='none'}
+document.addEventListener('DOMContentLoaded',function(){tip=document.createElement('div');tip.id='tip';document.body.appendChild(tip);
+ document.addEventListener('mousemove',function(ev){var el=ev.target.closest&&ev.target.closest('.ev');if(el)showTip(el,ev.clientX,ev.clientY);else hideTip()});
+ document.addEventListener('click',function(ev){var el=ev.target.closest&&ev.target.closest('.ev');if(el&&matchMedia('(hover:none)').matches)showTip(el,ev.clientX,ev.clientY);else if(matchMedia('(hover:none)').matches)hideTip()})});
 function render(){
  var d=data;if(!d)return;var n=now();
  var ty=n.getUTCFullYear(),tm=n.getUTCMonth()+off;var ref=new Date(Date.UTC(ty,tm,1));ty=ref.getUTCFullYear();tm=ref.getUTCMonth();
  var todayI=dayIdx(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate());
- var events=parseEvents(d.events);var status=cell(d.war,2,0).trim().toUpperCase();var done=(status==='CAP MET'||status==='WAR OVER');
+ var events=parseEvents(d.events);EV=events;DESC=d.desc||[];var status=cell(d.war,2,0).trim().toUpperCase();var done=(status==='CAP MET'||status==='WAR OVER');
  events.forEach(function(e){e.color=e.war?((e.archived||done)?COLORS.Slate:COLORS.Red):(COLORS[e.colname]||DEFAULT_COLOR)});
  var firstI=dayIdx(ty,tm,1),startI=firstI-idxToDate(firstI).getUTCDay();
  var lastI=dayIdx(ty,tm+1,0),weeks=Math.ceil((lastI-startI+1)/7);
@@ -195,7 +209,7 @@ function render(){
  for(var i=0;i<weeks*7;i++){var di=startI+i,dd=idxToDate(di);
   var evs=events.filter(function(e){return e.s<=di&&e.e>=di}).sort(function(a,b){return a.s-b.s||b.e-a.e});
   h+='<div class="cell'+(dd.getUTCMonth()!==tm?' out':'')+(di===todayI?' today':'')+'"><div class="n">'+dd.getUTCDate()+'</div>';
-  evs.slice(0,maxShow).forEach(function(e){h+='<div class="ev'+(e.s<di?' cont':'')+'" style="background:'+e.color+'" title="'+esc(e.title)+'">'+esc(e.title)+'</div>'});
+  evs.slice(0,maxShow).forEach(function(e){h+='<div class="ev'+(e.s<di?' cont':'')+'" data-i="'+events.indexOf(e)+'" style="background:'+e.color+'" >'+esc(e.title)+'</div>'});
   if(evs.length>maxShow)h+='<div class="more">+'+(evs.length-maxShow)+' more</div>';
   h+='</div>';}
  h+='</div>';
