@@ -7,6 +7,7 @@
 <style>
   html,body{margin:0;height:100%;background:#0f1a22;overflow-x:hidden}
   #stage{position:relative;margin:0 auto;overflow:hidden}
+  body{display:flex;justify-content:center;align-items:flex-start}
   #frame{position:absolute;left:0;top:0;border:0;transform-origin:0 0;background:#0f1a22}
 </style>
 </head>
@@ -17,10 +18,10 @@
 // Native size of the calendar in the sheet: 1551 px wide, 667 px tall.
 var W = 1555, H = 667;
 var q = new URLSearchParams(location.search);
-var cropTop = parseInt(q.get('top') || '0', 10);   // pixels to hide at the top (title line)
+var cropTop = parseInt(q.get('top') || '36', 10);  // pixels to hide at the top (Google title line)
 var frame = document.getElementById('frame'), stage = document.getElementById('stage');
 function fit(){
-  var s = Math.min(window.innerWidth / W, 2.5);
+  var s = Math.min(window.innerWidth / W, window.innerHeight / H, 2.5);  // fit the whole calendar in the window
   stage.style.width = (W * s) + 'px';
   stage.style.height = (H * s) + 'px';
   frame.style.width = W + 'px';
