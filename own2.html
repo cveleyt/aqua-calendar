@@ -117,12 +117,8 @@ body.desk .cell::before,body.desk .cell::after{content:"";position:absolute;left
 body.desk .cell::after{background:rgba(31,124,128,.14);animation-duration:12s;animation-direction:reverse}
 body.desk .cell:hover::before{top:80%;opacity:1}body.desk .cell:hover::after{top:84%;opacity:1}
 @keyframes aqspin{to{transform:rotate(360deg)}}
-body.desk .cell>.bb{position:absolute;bottom:-8px;border-radius:50%;border:1px solid rgba(143,227,227,.8);background:rgba(143,227,227,.12);opacity:0;pointer-events:none;z-index:1}
-body.desk .cell:hover>.bb{animation:aqbub 1.7s ease-in infinite}
-@keyframes aqbub{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:.9}100%{transform:translateY(-6em) scale(1.1);opacity:0}}
 }
-html.light body.desk .cell>.bb{border-color:rgba(31,111,125,.7);background:rgba(31,111,125,.10)}
-#status{color:#7A8F9D}
+html.light #status{color:#7A8F9D}
 #status{position:fixed;right:.8em;bottom:.4em;font:11px Arial;color:#5F7686}#status.err{color:#ff8f8f}
 /* phone */
 body.cmp #status{position:static;text-align:right;padding:.6em 1em}body.cmp .top{flex-wrap:wrap}body.cmp .clock{text-align:left;width:100%}
@@ -220,6 +216,33 @@ function cell(rows, r, c){ return (rows[r] && rows[r][c] != null) ? String(rows[
 
 function chipCol(t,i){t=(t||'').toUpperCase();if(i===0)return t==='UPCOMING'?'#365E94':t==='ONGOING'?'#AE3A3F':'#4A5E6D';if(i===1)return t.indexOf('TERMED')>=0?'#BC4214':t.indexOf('PENDING')>=0?'#5E6B52':'#9E2F36';return '#1B2F3F;color:#F2C14E'}
 var off=0,EV=[],DESC=[];
+/* hover bubbles: random size, position and height, then pop */
+(function(){
+ var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+ function rnd(a,b){return a+Math.random()*(b-a)}
+ function spawn(cell){
+  if(!cell.isConnected){clearInterval(cell.__bt);return}
+  if((cell.__n||0)>=8)return;
+  var h=cell.clientHeight,w=cell.clientWidth,light=document.documentElement.classList.contains('light');
+  var size=rnd(4,10),x=rnd(6,w-size-6),rise=rnd(.35,.9)*h,dur=rnd(1000,2300),wob=rnd(-10,10);
+  var col=light?'31,111,125':'143,227,227';
+  var b=document.createElement('i');
+  b.style.cssText='position:absolute;left:'+x+'px;bottom:-12px;width:'+size+'px;height:'+size+'px;border-radius:50%;pointer-events:none;z-index:1;border:1px solid rgba('+col+',.85);background:rgba('+col+',.12);box-shadow:inset 1px 1px 0 rgba(255,255,255,.35)';
+  cell.appendChild(b);cell.__n=(cell.__n||0)+1;
+  var a=b.animate([{transform:'translate(0,0) scale(.6)',opacity:0},{transform:'translate('+(wob/2)+'px,'+(-rise*.3)+'px) scale(.9)',opacity:.95,offset:.2},{transform:'translate('+(-wob/2)+'px,'+(-rise*.7)+'px) scale(1)',opacity:.95,offset:.7},{transform:'translate('+wob+'px,'+(-rise)+'px) scale(1.05)',opacity:.95}],{duration:dur,easing:'ease-in'});
+  a.onfinish=function(){
+   var r=size*2.6;
+   b.style.border='1.5px solid rgba('+col+',.9)';b.style.background='transparent';b.style.boxShadow='none';
+   var p=b.animate([{transform:'translate('+wob+'px,'+(-rise)+'px) scale(1.05)',opacity:.95},{transform:'translate('+wob+'px,'+(-rise)+'px) scale(2.4)',opacity:0,borderWidth:'0.5px'}],{duration:240,easing:'ease-out'});
+   p.onfinish=function(){b.remove();cell.__n--};
+  };
+ }
+ function start(cell){if(cell.__bt)return;spawn(cell);cell.__bt=setInterval(function(){if(Math.random()<.75)spawn(cell)},rnd(260,420))}
+ function stop(cell){clearInterval(cell.__bt);cell.__bt=null}
+ document.addEventListener('mouseover',function(e){if(RM||!document.body.classList.contains('desk'))return;var c=e.target.closest&&e.target.closest('.cell');if(!c||c.classList.contains('out')||c.contains(e.relatedTarget))return;start(c)});
+ document.addEventListener('mouseout',function(e){var c=e.target.closest&&e.target.closest('.cell');if(!c||c.contains(e.relatedTarget))return;stop(c)});
+})();
+
 var SEL=null;
 function applySel(){var app=document.getElementById('app');if(!app)return;
  [].forEach.call(app.querySelectorAll('.sel'),function(x){x.classList.remove('sel')});
@@ -302,7 +325,7 @@ h+='</div>';
  /* calendar */
  h+='<div class="card calwrap"><div class="calhead"><h2>'+MONTHS[tm].toUpperCase()+'<span>'+ty+'</span></h2></div><div class="dow">'+['SUN','MON','TUE','WED','THU','FRI','SAT'].map(function(x){return '<div>'+x+'</div>'}).join('')+'</div>';
  h+='<div class="grid" style="grid-template-rows:repeat('+weeks+',minmax(0,1fr))">';
- var maxShow=4;var bubs='';for(var k=0;k<6;k++){bubs+='<i class="bb" style="left:'+(8+k*15)+'%;width:'+(4+(k*5)%6)+'px;height:'+(4+(k*5)%6)+'px;animation-delay:'+(k*.25)+'s"></i>'}
+ var maxShow=4;var bubs='';
  for(var i=0;i<weeks*7;i++){var di=startI+i,dd=idxToDate(di);
   var evs=events.filter(function(e){return e.s<=di&&e.e>=di}).sort(function(a,b){return a.s-b.s||b.e-a.e});
   h+='<div class="cell'+(dd.getUTCMonth()!==tm?' out':'')+(di===todayI?' today':'')+'" data-di="'+di+'"><div class="n">'+dd.getUTCDate()+'</div>';
