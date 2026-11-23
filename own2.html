@@ -108,6 +108,20 @@ body.desk .col{overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-
 body.desk .col::-webkit-scrollbar{width:6px}body.desk .col::-webkit-scrollbar-thumb{background:#35566a;border-radius:6px}body.desk .col::-webkit-scrollbar-track{background:transparent}
 body.desk .col>.card{flex-shrink:0}
 html.light body.desk .col{scrollbar-color:#9fb4c2 transparent}html.light body.desk .col::-webkit-scrollbar-thumb{background:#9fb4c2}
+
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+body.desk .cell{position:relative;transition:border-color .3s,box-shadow .3s}
+body.desk .cell>*{position:relative;z-index:2}
+body.desk .cell:not(.out):hover{border-color:rgba(95,179,179,.8)!important;box-shadow:0 0 12px rgba(95,179,179,.25)}
+body.desk .cell::before,body.desk .cell::after{content:"";position:absolute;left:-50%;width:200%;height:200%;top:100%;border-radius:40%;background:rgba(95,179,179,.10);opacity:0;transition:top .8s ease,opacity .5s;animation:aqspin 8s linear infinite;pointer-events:none;z-index:0}
+body.desk .cell::after{background:rgba(31,124,128,.14);animation-duration:12s;animation-direction:reverse}
+body.desk .cell:hover::before{top:80%;opacity:1}body.desk .cell:hover::after{top:84%;opacity:1}
+@keyframes aqspin{to{transform:rotate(360deg)}}
+body.desk .cell>.bb{position:absolute;bottom:-8px;border-radius:50%;border:1px solid rgba(143,227,227,.8);background:rgba(143,227,227,.12);opacity:0;pointer-events:none;z-index:1}
+body.desk .cell:hover>.bb{animation:aqbub 1.7s ease-in infinite}
+@keyframes aqbub{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:.9}100%{transform:translateY(-6em) scale(1.1);opacity:0}}
+}
+html.light body.desk .cell>.bb{border-color:rgba(31,111,125,.7);background:rgba(31,111,125,.10)}
 #status{color:#7A8F9D}
 #status{position:fixed;right:.8em;bottom:.4em;font:11px Arial;color:#5F7686}#status.err{color:#ff8f8f}
 /* phone */
@@ -288,13 +302,13 @@ h+='</div>';
  /* calendar */
  h+='<div class="card calwrap"><div class="calhead"><h2>'+MONTHS[tm].toUpperCase()+'<span>'+ty+'</span></h2></div><div class="dow">'+['SUN','MON','TUE','WED','THU','FRI','SAT'].map(function(x){return '<div>'+x+'</div>'}).join('')+'</div>';
  h+='<div class="grid" style="grid-template-rows:repeat('+weeks+',minmax(0,1fr))">';
- var maxShow=4;
+ var maxShow=4;var bubs='';for(var k=0;k<6;k++){bubs+='<i class="bb" style="left:'+(8+k*15)+'%;width:'+(4+(k*5)%6)+'px;height:'+(4+(k*5)%6)+'px;animation-delay:'+(k*.25)+'s"></i>'}
  for(var i=0;i<weeks*7;i++){var di=startI+i,dd=idxToDate(di);
   var evs=events.filter(function(e){return e.s<=di&&e.e>=di}).sort(function(a,b){return a.s-b.s||b.e-a.e});
   h+='<div class="cell'+(dd.getUTCMonth()!==tm?' out':'')+(di===todayI?' today':'')+'" data-di="'+di+'"><div class="n">'+dd.getUTCDate()+'</div>';
   evs.slice(0,maxShow).forEach(function(e){h+='<div class="ev'+(e.s<di?' cont':'')+'" data-i="'+events.indexOf(e)+'" style="background:'+e.color+'" >'+esc(e.title)+'</div>'});
   if(evs.length>maxShow)h+='<div class="more">+'+(evs.length-maxShow)+' more</div>';
-  h+='</div>';}
+  h+=bubs+'</div>';}
  h+='</div>';
  var me=events.filter(function(e){var x=idxToDate(e.s);return x.getUTCMonth()===tm&&x.getUTCFullYear()===ty}).sort(function(a,b){return a.s-b.s});
  h+='<div class="agenda">'+me.map(function(e){return '<div class="ag" data-s="'+e.s+'" data-e="'+e.e+'" style="background:'+e.color+'"><span>'+esc(fmtDay(e.s))+'</span><span>'+esc(e.title)+'</span></div>'}).join('')+'</div></div>';
