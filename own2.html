@@ -137,6 +137,13 @@ html.light .wm{-webkit-mask-image:none;mask-image:none;opacity:.8}
 html.light .top .logo{filter:brightness(.72) saturate(1.35) drop-shadow(0 0 5px rgba(255,255,255,.7))}
 html.light .top .clock .t{color:#10303a}html.light .top .clock .d,html.light .top .stead{color:#2C5A66}
 html.light .top .thb{background:rgba(255,255,255,.55);border-color:rgba(31,90,106,.35);color:#10303a}
+.lg{position:relative}
+.lw{position:absolute;inset:0;pointer-events:none;overflow:hidden;background:#1d6f78;-webkit-mask:url(assets/aqua-logo.png?v=2) 0 0/100% 100% no-repeat;mask:url(assets/aqua-logo.png?v=2) 0 0/100% 100% no-repeat}
+.lw .wm{-webkit-mask-image:none;mask-image:none;opacity:1;z-index:0}
+.lw .wtr{filter:brightness(2.6) saturate(.9)}
+html.light .lw{background:#0d3f4a}
+html.light .lw .wtr{filter:brightness(1.3) saturate(1.2)}
+@media (prefers-reduced-motion:reduce){.lw .wtr{animation:none!important}}
 body.cmp .top{padding:10px 12px!important}
 @media (prefers-reduced-motion:reduce){.wtr{animation:none!important}}
 html.light #status{color:#7A8F9D}
@@ -313,7 +320,7 @@ function render(){
  var firstI=dayIdx(ty,tm,1),startI=firstI-idxToDate(firstI).getUTCDay();
  var lastI=dayIdx(ty,tm+1,0),weeks=Math.ceil((lastI-startI+1)/7);
  var st=(d.stead&&d.stead[0])||[];
- var h='<div class="top">'+WATER+'<a class="lg" href="https://www.torn.com/factions.php?step=profile&ID=10174" target="_blank" rel="noopener" title="Open the AQUA faction page"><img class="logo" src="assets/aqua-logo.png?v=2" alt="AQUA"></a><div class="sp"></div>';
+ var h='<div class="top">'+WATER+'<a class="lg" href="https://www.torn.com/factions.php?step=profile&ID=10174" target="_blank" rel="noopener" title="Open the AQUA faction page"><img class="logo" src="assets/aqua-logo.png?v=2" alt="AQUA"><span class="lw"><div class="wm">'+WATER+'</div></span></a><div class="sp"></div>';
  h+='<div class="stead">'+(st[0]?esc(st[0])+' ':'')+(st[1]?'<span class="pill maj">'+esc(st[1])+'</span>':'')+(st[2]?'<span class="pill min">'+esc(st[2])+'</span>':'')+'</div>';
  h+='<button id="th" class="thb" type="button" aria-label="Switch between dark and light mode" title="Dark / light mode">'+themeIcon()+'</button>';h+='<div class="clock"><div class="t" id="clk"></div><div class="d" id="dte"></div></div></div><div class="main">';
  /* left */
