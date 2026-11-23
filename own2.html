@@ -118,6 +118,22 @@ body.desk .cell::after{background:rgba(31,124,128,.14);animation-duration:12s;an
 body.desk .cell:hover::before{top:80%;opacity:1}body.desk .cell:hover::after{top:84%;opacity:1}
 @keyframes aqspin{to{transform:rotate(360deg)}}
 }
+.top{position:relative;overflow:hidden;border-radius:14px;padding:10px 16px!important;min-height:5em;
+ background:linear-gradient(100deg,#15414c 0%,#10303a 40%,#0d1f29 75%,#0b171e 100%);border:1px solid #1F3544;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.top>*:not(.wm){position:relative;z-index:3}
+.wtr{position:absolute;left:-15%;top:-30%;width:130%;height:160%;z-index:0;pointer-events:none;will-change:transform}
+.wtr.a{animation:wa 24s ease-in-out infinite alternate}
+.wtr.b{animation:wb 31s ease-in-out infinite alternate}
+@keyframes wa{0%{transform:translate(0,0) scale(1) rotate(0deg)}100%{transform:translate(-7%,5%) scale(1.08) rotate(1.5deg)}}
+@keyframes wb{0%{transform:translate(6%,-4%) scale(1.05) rotate(0deg)}100%{transform:translate(-5%,4%) scale(1) rotate(-1.5deg)}}
+.wm{position:absolute;inset:0;z-index:1;pointer-events:none;-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.25) 0%,#000 35%,#000 62%,rgba(0,0,0,.25) 100%);mask-image:linear-gradient(90deg,rgba(0,0,0,.25) 0%,#000 35%,#000 62%,rgba(0,0,0,.25) 100%);overflow:hidden}
+.top::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(22% 140% at 5% 50%,rgba(8,20,26,.55),transparent 80%),radial-gradient(28% 140% at 97% 50%,rgba(8,20,26,.55),transparent 80%),linear-gradient(180deg,rgba(255,255,255,.04),transparent 40%)}
+.logo{filter:drop-shadow(0 0 6px rgba(95,179,179,.6)) brightness(1.2)}
+
+html.light .top .clock .t{color:#fff}html.light .top .clock .d,html.light .top .stead{color:#a9d6cc}html.light .top .logo{filter:drop-shadow(0 0 6px rgba(95,179,179,.6)) brightness(1.2)}
+html.light .top .thb{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.3);color:#fff}
+body.cmp .top{padding:10px 12px!important}
+@media (prefers-reduced-motion:reduce){.wtr{animation:none!important}}
 html.light #status{color:#7A8F9D}
 #status{position:fixed;right:.8em;bottom:.4em;font:11px Arial;color:#5F7686}#status.err{color:#ff8f8f}
 /* phone */
@@ -215,7 +231,7 @@ function cell(rows, r, c){ return (rows[r] && rows[r][c] != null) ? String(rows[
 
 
 function chipCol(t,i){t=(t||'').toUpperCase();if(i===0)return t==='UPCOMING'?'#365E94':t==='ONGOING'?'#AE3A3F':'#4A5E6D';if(i===1)return t.indexOf('TERMED')>=0?'#BC4214':t.indexOf('PENDING')>=0?'#5E6B52':'#9E2F36';return '#1B2F3F;color:#F2C14E'}
-var off=0,EV=[],DESC=[];
+var off=0,EV=[],DESC=[];var WATER="<div class=\"wm\"><svg class=\"wtr a\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"none\"><defs><filter id=\"c1\" x=\"0\" y=\"0\" width=\"100%\" height=\"100%\" color-interpolation-filters=\"sRGB\">\n<feTurbulence type=\"turbulence\" baseFrequency=\"0.011 0.022\" numOctaves=\"2\" seed=\"4\" result=\"t\"/>\n<feColorMatrix in=\"t\" type=\"matrix\" values=\"0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -1.2 0 0 0 1.05\" result=\"a\"/>\n<feComponentTransfer in=\"a\" result=\"b\"><feFuncA type=\"gamma\" exponent=\"10\" amplitude=\"1.5\" offset=\"0\"/></feComponentTransfer>\n<feColorMatrix in=\"b\" type=\"matrix\" values=\"0 0 0 0 0.55  0 0 0 0 0.85  0 0 0 0 0.88  0 0 0 0.9 0\"/></filter></defs>\n<rect width=\"100%\" height=\"100%\" filter=\"url(#c1)\" opacity=\"0.42\"/></svg><svg class=\"wtr b\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"none\"><defs><filter id=\"c2\" x=\"0\" y=\"0\" width=\"100%\" height=\"100%\" color-interpolation-filters=\"sRGB\">\n<feTurbulence type=\"turbulence\" baseFrequency=\"0.02 0.035\" numOctaves=\"2\" seed=\"11\" result=\"t\"/>\n<feColorMatrix in=\"t\" type=\"matrix\" values=\"0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -1.2 0 0 0 1.05\" result=\"a\"/>\n<feComponentTransfer in=\"a\" result=\"b\"><feFuncA type=\"gamma\" exponent=\"11\" amplitude=\"1.2\" offset=\"0\"/></feComponentTransfer>\n<feColorMatrix in=\"b\" type=\"matrix\" values=\"0 0 0 0 0.37  0 0 0 0 0.7  0 0 0 0 0.7  0 0 0 0.7 0\"/></filter></defs>\n<rect width=\"100%\" height=\"100%\" filter=\"url(#c2)\" opacity=\"0.3\"/></svg></div>";
 /* hover bubbles: random size, position and height, then pop */
 (function(){
  var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -292,7 +308,7 @@ function render(){
  var firstI=dayIdx(ty,tm,1),startI=firstI-idxToDate(firstI).getUTCDay();
  var lastI=dayIdx(ty,tm+1,0),weeks=Math.ceil((lastI-startI+1)/7);
  var st=(d.stead&&d.stead[0])||[];
- var h='<div class="top"><a class="lg" href="https://www.torn.com/factions.php?step=profile&ID=10174" target="_blank" rel="noopener" title="Open the AQUA faction page"><img class="logo" src="assets/aqua-logo.png?v=2" alt="AQUA"></a><div class="sp"></div>';
+ var h='<div class="top">'+WATER+'<a class="lg" href="https://www.torn.com/factions.php?step=profile&ID=10174" target="_blank" rel="noopener" title="Open the AQUA faction page"><img class="logo" src="assets/aqua-logo.png?v=2" alt="AQUA"></a><div class="sp"></div>';
  h+='<div class="stead">'+(st[0]?esc(st[0])+' ':'')+(st[1]?'<span class="pill maj">'+esc(st[1])+'</span>':'')+(st[2]?'<span class="pill min">'+esc(st[2])+'</span>':'')+'</div>';
  h+='<button id="th" class="thb" type="button" aria-label="Switch between dark and light mode" title="Dark / light mode">'+themeIcon()+'</button>';h+='<div class="clock"><div class="t" id="clk"></div><div class="d" id="dte"></div></div></div><div class="main">';
  /* left */
@@ -353,7 +369,7 @@ function fit(){var b=document.body,vw=innerWidth,vh=innerHeight;b.classList.remo
  var fs=m==='desk'?Math.max(9,Math.min(vw/118,vh/58,30)):(m==='med'?Math.min(17,vw/55):Math.max(13,Math.min(17,vw/26)));
  document.documentElement.style.fontSize=fs+'px';document.body.style.fontSize='1rem'}
 function setStatus(){var el=document.getElementById('status');if(lastErr){el.className='err';el.textContent='Could not refresh: '+lastErr}else if(lastOk){el.className='';el.textContent=DEMO?'demo data':'Updated '+lastOk+' TCT'}}
-function refresh(){loadAll().then(function(d){data=d;var n=new Date();lastOk=pad(n.getUTCHours())+':'+pad(n.getUTCMinutes())+':'+pad(n.getUTCSeconds());lastErr=null;render();setStatus()}).catch(function(e){lastErr=(e&&e.message)||'error';setStatus()})}
+function refresh(){loadAll().then(function(d){var js=JSON.stringify(d);var same=(js===window.__lastJS);window.__lastJS=js;data=d;var n=new Date();lastOk=pad(n.getUTCHours())+':'+pad(n.getUTCMinutes())+':'+pad(n.getUTCSeconds());lastErr=null;if(!same||!document.querySelector('.top'))render();setStatus()}).catch(function(e){lastErr=(e&&e.message)||'error';setStatus()})}
 addEventListener('resize',fit);setInterval(tick,1000);
 if(DEMO){var s=document.createElement('script');s.src='demo-data.js';s.onload=refresh;document.head.appendChild(s)}else{refresh();setInterval(refresh,REFRESH_MS)}
 })();</script><script data-goatcounter="https://aquacal.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
