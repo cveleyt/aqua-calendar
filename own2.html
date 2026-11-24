@@ -348,7 +348,7 @@ function render(){
  var up=events.filter(function(e){return e.e>=todayI&&!e.archived}).sort(function(a,b){return a.s-b.s||a.e-b.e}).slice(0,6);
  var wid=String(((d.sc||[])[0]||[''])[0]).replace(/[^0-9]/g,''),wdone=(String(((d.sc||[])[3]||[''])[0]).toUpperCase()==='TRUE')||status==='WAR OVER';var wurl=(wdone&&wid)?'https://www.torn.com/war.php?step=rankreport&rankID='+wid:'https://www.torn.com/factions.php?step=your#/war/rank';var wt=wdone&&wid?'Open the war report on Torn':'Open the active war page on Torn';
  h+='<div class="col"><div class="card war"><span class="tag">RANKED WAR NOTICE</span><div class="vs"><a class="team a" href="'+wurl+'" target="_blank" rel="noopener" title="'+wt+'"><div class="n">'+esc(aq[0])+'</div><div class="c">'+esc(aq[1]||'')+'</div></a><div class="x">VS</div><a class="team b" href="'+wurl+'" target="_blank" rel="noopener" title="'+wt+'"><div class="n">'+esc(op[0])+'</div><div class="c">'+esc(op[1]||'')+'</div></a></div>';
- h+='<div class="when">'+esc(cell(d.war,1,0))+'</div><div class="chips">'+chips.map(function(t,i){return '<span class="chip" style="background:'+chipCol(t,i)+'">'+esc(t)+'</span>'}).join('')+'</div>';
+ h+='<div class="when">'+esc(cell(d.war,1,0).replace(/\s+20\d\d(?=\s*\|)/,''))+'</div><div class="chips">'+chips.map(function(t,i){return '<span class="chip" style="background:'+chipCol(t,i)+'">'+esc(t)+'</span>'}).join('')+'</div>';
  if(rules.length)h+='<div class="rules">'+rules.map(function(p){return '<p>'+esc(p)+'</p>'}).join('')+'</div>';
  h+='</div><div class="card next"><div class="lbl">Next events</div>';
  if(!up.length)h+='<div style="color:var(--mut)">No upcoming events</div>';
